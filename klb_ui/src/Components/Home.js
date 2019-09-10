@@ -24,15 +24,10 @@ class Home extends React.Component {
 	}
 
 	render() {
-		console.log("home");
-		console.log(this.state.post);
-		// console.log(this.state.post[0]);
-		// console.log("aroooooo");
 		return (
 			<div className='home'>
-				<Post post={ this.state.post }/>
-				{/* <Post post={ {title: "Title!!!" }}/> */}
-				{/* <Group post_id={ this.state.post }/> */}
+				<Post post={ this.state.post[0] }/>
+				<Group post={ this.state.post }/>
 			</div>
 		)
 	}

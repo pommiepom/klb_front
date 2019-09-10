@@ -7,27 +7,25 @@ const Div = styled.div`
 `
 
 class Group extends React.Component {
-	// constructor() {
-	// 	super();
-	// 	this.state = { post: "" };
-	//  }
-
-	// componentDidMount() {
-	// 	const post_id = "5d5f5324dea7e02670f42f8f"
-	// 	axios.get(`http://localhost:8001/api/posts/${post_id}`)
-	// 		.then(res => {
-	// 			const post = res.data[0]
-	// 			this.setState({ post })
-	// 			console.log(this.state);
-	// 		})
-	// }
+	constructor(props) {
+		super(props);
+		this.state = { post: [] };
+	}
 	
+	static getDerivedStateFromProps(props, state) {
+		return { post: props.post || [] };
+	}
+
 	render() {
+		console.log("state");
+		console.log(this.state.post);
 		return (
 			<Div>
-                {/* { this.} */}
-				<Post />
-				<Post />
+				{
+					this.state.post.map((post) => 
+						<Post key={post._id} post={ post } />
+					)
+				}
 			</Div>
 		)
 	};
