@@ -25,6 +25,7 @@ class Group extends React.Component {
 	render() {
 		return (
 			<Div>
+                {/* { this.} */}
 				<Post />
 				<Post />
 			</Div>
