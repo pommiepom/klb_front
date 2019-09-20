@@ -1,18 +1,13 @@
-import React from 'react';
-import './App.css';
-import Navigation from './Components/Navigation'
-import Router from './routes/Router'
+import React from "react";
+import "./App.css";
+import Navigation from "./components/Navigation.jsx";
+import Router from "./routes/Router.jsx";
 
-class App extends React.Component {
-	render() {
-		return (
-			<div className='app'>
-				<h1>React Router Demo</h1>
-				<Navigation />
-				<Router />
-			</div> 
-		)
-	}
-}
+const App = () => (
+   <div className="app">
+      {/* <Navigation /> */}
+      <Router />
+   </div>
+);
 
 export default App;
