@@ -1,21 +1,14 @@
 import React from "react";
-import axios from "axios";
 import { Container, Row, Col } from "reactstrap";
-import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Button, Form, FormGroup, Input } from 'reactstrap';
+import { Textfit } from 'react-textfit';
 import styled from "styled-components";
 
-const Headline = styled.h1`
-text-align: center;
-font-weight: bold;
-width: 100%;
-color: #6c757d;
-margin-bottom: 50px;
-overflow-wrap: break-word
-`;
-
-const Test  = styled.div`
-// text-align: center;
-// font-weight: bold
+const Headline = styled(Textfit)`
+	text-align: center;
+	font-weight: bold;
+	color: #6c757d;
+	margin: 0 10px 50px 10px;
 `;
 
 const ButtonSubmit = styled(Button)`
@@ -27,16 +20,15 @@ const ButtonSubmit = styled(Button)`
 class Signin extends React.Component {
 	render() {
       return (
-         <Container>
+         <Container style={{ paddingTop: "25vh" }}>
+				<div className="mx-auto my-0" style={{ maxWidth: '400px' }}>
+					<Headline mode="single" id="headline">KNOWLEDGE BASE</Headline>
+				</div>
 				<Row>
-					<Col xs={7} md={5} className="w-50" style={{ margin: "0 auto", marginTop: "20vh" }}>
-						<Headline>KNOWLEDGE BASE</Headline>
-						
-						<Form >
+					<Col xs={8} className="mx-auto my-0">
+						<Form style={{ maxWidth: "350px", margin: "0 auto"}}>
 							<FormGroup >
-								<Test>
-									<Input type="text" name="username" id="username" placeholder="Usename"/>
-								</Test>
+								<Input type="text" name="username" id="username" placeholder="Usename"/>
 							</FormGroup>
 							<FormGroup >
 									<Input type="password" name="password" id="password" placeholder="Password" />
