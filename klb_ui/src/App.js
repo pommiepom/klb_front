@@ -1,13 +1,18 @@
 import React from "react";
-import "./App.css";
-import Navigation from "./components/Navigation.jsx";
-import Router from "./routes/Router.jsx";
+import { Switch, Route } from "react-router-dom";
 
-const App = () => (
-   <div className="app">
-      {/* <Navigation /> */}
-      <Router />
-   </div>
-);
+import Signin from "./pages/Signin/index.jsx";
+import Page from "./pages/Page.jsx";
+
+class App extends React.Component {
+   render() {
+      return (
+         <Switch>
+            <Route exact path="/signin" component={Signin}></Route>
+            <Route path="/" component={Page}></Route>
+         </Switch>
+      );
+   }
+}
 
 export default App;

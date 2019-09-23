@@ -1,5 +1,5 @@
 import React from "react";
-
+console.log("about");
 const About = () => (
    <div className="about">
       <h1>About Me</h1>

@@ -22,11 +22,11 @@ class Signin extends React.Component {
       return (
          <Container style={{ paddingTop: "25vh" }}>
 				<div className="mx-auto my-0" style={{ maxWidth: '400px' }}>
-					<Headline mode="single" id="headline">KNOWLEDGE BASE</Headline>
+					<Headline mode="single">KNOWLEDGE BASE</Headline>
 				</div>
 				<Row>
 					<Col xs={8} className="mx-auto my-0">
-						<Form style={{ maxWidth: "350px", margin: "0 auto"}}>
+						<Form className="mx-auto my-0" style={{ maxWidth: "350px" }}>
 							<FormGroup >
 								<Input type="text" name="username" id="username" placeholder="Usename"/>
 							</FormGroup>

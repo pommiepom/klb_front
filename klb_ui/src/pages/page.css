@@ -1,5 +1,8 @@
 html {
   box-sizing: border-box;
+  /* background-color: #F9F9F9 */
+  background-color: 'green'
+
 }
 
 *, *::before, *::after {
@@ -8,10 +11,9 @@ html {
   margin: 0;
 }
 
-.app {
-  width: 100vw;
-  height: 100vh;
-  background-color: #F9F9F9
+.page {
+  background-color: #F9F9F9;
+  min-height: 100vh
 }
 
 nav ul {
