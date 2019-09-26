@@ -1,7 +1,7 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
 
-import Signin from "./pages/Signin/index.jsx";
+import Signin from "./pages/Signin/Signin.jsx";
 import Page from "./pages/Page.jsx";
 
 class App extends React.Component {
