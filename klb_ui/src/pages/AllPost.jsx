@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import Post from "../components/Post.jsx";
-import Group from "../components/Group.jsx";
+// import Group from "../components/Group.jsx";
 import styled from "styled-components";
 
 const Content = styled.div`
@@ -26,7 +26,7 @@ class AllPost extends React.Component {
       return (
          <Content>
             <Post post={this.state.post[0]} />
-            <Group post={this.state.post} />
+            {/* <Group post={this.state.post} /> */}
          </Content>
       );
    }

@@ -1,11 +1,12 @@
 import React from "react";
 import API from "../../module/api";
-import $ from "jquery";
+// import $ from "jquery";
 import styled from "styled-components";
 import { Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
 import Post from "../../components/Post.jsx";
-import Pagination from "../../components/Pagination.js";
+import PaginationButton from "../../components/Pagination.js";
+import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
 const Content = styled.div`
    background-color: #f9f9f9;
@@ -28,11 +29,21 @@ const ButtonNewPost = styled(Button)`
    padding-right: 15px !important;
 `;
 
+const StyledPagination = styled(Pagination)`
+   background-color: transparent;
+	margin-left: auto;
+	margin-right: auto
+`;
+
+const StyledItem = styled(PaginationItem)`
+   padding: 0;
+`;
+
 class NewPost extends React.Component {
    constructor(props) {
-      super(props)
-      this.state = { posts: [], currentPage: 1, postsPerPage: 10 }
-      this.handleClick = this.handleClick.bind(this)
+      super(props);
+      this.state = { posts: [], currentPage: 1, postsPerPage: 10 };
+      this.handleClick = this.handleClick.bind(this);
    }
 
    componentDidMount() {
@@ -44,32 +55,38 @@ class NewPost extends React.Component {
 
    handleClick(event) {
       this.setState({
-        currentPage: Number(event.target.id)
+         currentPage: Number(event.target.id)
       });
-    }
+   }
 
    render() {
       const { posts, currentPage, postsPerPage } = this.state;
 
-		// Logic for displaying current todos
-		const indexOfLastPost = currentPage * postsPerPage;
-		const indexOfFirstPost = indexOfLastPost - postsPerPage;
-		const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+      // Logic for displaying current todos
+      const indexOfLastPost = currentPage * postsPerPage;
+      const indexOfFirstPost = indexOfLastPost - postsPerPage;
+      const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
-		const renderPost = currentPosts.map((post, index) => {
-		   return <Post key={index} post={post} />
-		});
+      const renderPost = currentPosts.map((post, index) => {
+         return <Post key={index} post={post} />;
+      });
 
-		// Logic for displaying page numbers
-		const pageNumbers = [];
-		for (let i = 1; i <= Math.ceil(posts.length / postsPerPage); i++) {
-			pageNumbers.push(i);
-		}
+      // Logic for displaying page numbers
+      const pageNumbers = [];
+      for (let i = 1; i <= Math.ceil(posts.length / postsPerPage); i++) {
+         pageNumbers.push(i);
+      }
 
-		const renderPageNumbers = pageNumbers.map((number, index) => {
-			return <Pagination handleClick={this.handleClick} key={index} number={number} />
-		});
-		
+      const renderPageNumbers = pageNumbers.map((number, index) => {
+         return (
+            <PaginationButton
+               handleClick={this.handleClick}
+               key={index}
+               number={number}
+            />
+         );
+      });
+
       return (
          <Content>
             <Row>
@@ -84,11 +101,27 @@ class NewPost extends React.Component {
                         </ButtonNewPost>
                      </Col>
                   </Row>
-                  <div style={{ border: "1px solid #b8b8b8" }}>{renderPost}</div>
-                  {/* <Pagination /> */}
-                  <div id="page-numbers">
-                     {renderPageNumbers}
+                  <div style={{ border: "1px solid #b8b8b8", marginBottom: "50px" }}>
+                     {renderPost}
                   </div>
+
+							<div style={{ marginLeft: "auto", marginRight: "auto", width: "auto" }}>
+                  <StyledPagination>
+								<StyledItem disabled>
+									<PaginationLink first href="#" />
+								</StyledItem>
+								<StyledItem disabled>
+									<PaginationLink previous href="#" />
+								</StyledItem>
+								{renderPageNumbers}
+								<StyledItem>
+									<PaginationLink next href="#" />
+								</StyledItem>
+								<StyledItem>
+									<PaginationLink last href="#" />
+								</StyledItem>
+                  </StyledPagination>
+							</div>
                </Col>
             </Row>
          </Content>
