@@ -4,7 +4,8 @@ import $ from "jquery";
 import styled from "styled-components";
 import { Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
-import Group from "../../components/Group.jsx";
+import Post from "../../components/Post.jsx";
+// import Pagination from "../../components/Pagination.js";
 
 const Content = styled.div`
    background-color: #f9f9f9;
@@ -29,18 +30,54 @@ const ButtonNewPost = styled(Button)`
 
 class NewPost extends React.Component {
    constructor(props) {
-      super(props);
-      this.state = { post: "" };
+      super(props)
+      this.state = { posts: [], currentPage: 1, postsPerPage: 10 }
+      this.handleClick = this.handleClick.bind(this)
    }
 
    componentDidMount() {
       API.get(`/posts`).then(res => {
-         const post = res.data;
-         this.setState({ post: post });
+         const posts = res.data;
+         this.setState({ posts });
       });
    }
 
+   handleClick(event) {
+      this.setState({
+        currentPage: Number(event.target.id)
+      });
+    }
+
    render() {
+      const { posts, currentPage, postsPerPage } = this.state;
+
+		// Logic for displaying current todos
+		const indexOfLastPost = currentPage * postsPerPage;
+		const indexOfFirstPost = indexOfLastPost - postsPerPage;
+		const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+		const renderPost = currentPosts.map((post, index) => {
+		   return <Post key={index} post={post} />
+		});
+
+		// Logic for displaying page numbers
+		const pageNumbers = [];
+		for (let i = 1; i <= Math.ceil(posts.length / postsPerPage); i++) {
+			pageNumbers.push(i);
+		}
+
+		const renderPageNumbers = pageNumbers.map(number => {
+         return (
+            <li
+            key={number}
+            id={number}
+            onClick={this.handleClick}
+            >
+            {number}
+            </li>
+         );
+      });
+      
       return (
          <Content>
             <Row>
@@ -55,7 +92,11 @@ class NewPost extends React.Component {
                         </ButtonNewPost>
                      </Col>
                   </Row>
-                  <Group post={this.state.post} />
+                  {/* <Pagination /> */}
+                  <ul >{renderPost}</ul>
+                  <ul id="page-numbers">
+                     {renderPageNumbers}
+                  </ul>
                </Col>
             </Row>
          </Content>
