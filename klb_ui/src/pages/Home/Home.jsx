@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
 import Post from "../../components/Post.jsx";
-// import Pagination from "../../components/Pagination.js";
+import Pagination from "../../components/Pagination.js";
 
 const Content = styled.div`
    background-color: #f9f9f9;
@@ -66,18 +66,10 @@ class NewPost extends React.Component {
 			pageNumbers.push(i);
 		}
 
-		const renderPageNumbers = pageNumbers.map(number => {
-         return (
-            <li
-            key={number}
-            id={number}
-            onClick={this.handleClick}
-            >
-            {number}
-            </li>
-         );
-      });
-      
+		const renderPageNumbers = pageNumbers.map((number, index) => {
+			return <Pagination handleClick={this.handleClick} key={index} number={number} />
+		});
+		
       return (
          <Content>
             <Row>
@@ -92,11 +84,11 @@ class NewPost extends React.Component {
                         </ButtonNewPost>
                      </Col>
                   </Row>
+                  <div style={{ border: "1px solid #b8b8b8" }}>{renderPost}</div>
                   {/* <Pagination /> */}
-                  <ul >{renderPost}</ul>
-                  <ul id="page-numbers">
+                  <div id="page-numbers">
                      {renderPageNumbers}
-                  </ul>
+                  </div>
                </Col>
             </Row>
          </Content>
