@@ -22,8 +22,6 @@ const ButtonNewPost = styled(Button)`
    background-color: #fd7e47 !important;
    border: none !important;
    font-weight: bold !important;
-   // margin-left: auto;
-   // margin-right: auto;
    border-radius: 25px !important;
    padding-left: 15px !important;
    padding-right: 15px !important;
@@ -101,7 +99,7 @@ class NewPost extends React.Component {
                         </ButtonNewPost>
                      </Col>
                   </Row>
-                  <div style={{ border: "1px solid #b8b8b8", marginBottom: "50px" }}>
+                  <div style={{ borderBottom: "1px solid #b8b8b8", marginBottom: "50px" }}>
                      {renderPost}
                   </div>
 

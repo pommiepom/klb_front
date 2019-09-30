@@ -7,6 +7,7 @@ import moment from "moment";
 const Div = styled.div`
    background-color: #ffffff;
    border: 1px solid #b8b8b8;
+   border-bottom: none;
    padding: 15px 25px;
    color: 73777a;
 `;
