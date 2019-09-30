@@ -7,23 +7,32 @@ class PaginationButton extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = { pageNumbers: [], currentPage: 1 }
-		// this.handleClick = this.handleClick.bind(this)
 	}
 
 	
 	render() {
 		const StyledItem = styled(PaginationItem)`
-			padding: 0;
-		`
+         padding: 0;
+      `
+      
+      const StyledLink = styled(PaginationLink)`
+         border: 0px !important;
+      `
+      
+      const number = this.props.number
+      const activeColor = {}
 
-		const number = this.props.number
+      if(number == this.props.currentPage) {
+         activeColor.backgroundColor = "#B5C9D4"
+         activeColor.color = "#ffffff !important"
+      }
+
 		return (
 			<StyledItem>
-				<PaginationLink key={number} id={number} onClick={this.props.handleClick}>
+				<StyledLink style={activeColor} key={number} id={number} onClick={this.props.handleClick}>
 					{number}
- 				</PaginationLink> 
+ 				</StyledLink> 
 			</StyledItem>
-			
 		)
 	}
 }
