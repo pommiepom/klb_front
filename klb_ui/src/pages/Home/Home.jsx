@@ -48,9 +48,11 @@ class NewPost extends React.Component {
       super(props);
       this.state = {
          posts: [],
+         postsLength: 0,
          currentPage: 1,
          postsPerPage: 10,
-         pageLength: 1
+         pageLength: 1,
+         pageRangeDisplayed: 10
       };
       this.handleClick = this.handleClick.bind(this);
       this.first = this.first.bind(this);
@@ -60,69 +62,125 @@ class NewPost extends React.Component {
    }
 
    componentDidMount() {
-      API.get(`/posts`).then(res => {
-         const posts = res.data;
-         this.setState({ posts });
+      API.get(`/posts/count`).then(res => {
+         this.setState({ postsLength: res.data }, () => {
+            this.setState({
+               pageLength: Math.ceil(
+                  this.state.postsLength / this.state.postsPerPage
+               )
+            });
+         });
+      });
+
+      const limit = this.state.postsPerPage;
+      const skip = 0;
+
+      API.get(`/posts`, { params: { limit, skip } }).then(res => {
+         this.setState({ posts: res.data });
       });
    }
 
    first() {
-      this.setState({
-         currentPage: 1
-      });
+      this.setState(
+         {
+            currentPage: 1
+         },
+         () => {
+            const limit = this.state.postsPerPage;
+            const skip = (this.state.currentPage - 1) * limit;
+
+            API.get(`/posts`, { params: { limit, skip } }).then(res => {
+               this.setState({ posts: res.data });
+            });
+         }
+      );
    }
 
    previous() {
-      this.setState({
-         currentPage: this.state.currentPage - 1
-      });
+      this.setState(
+         {
+            currentPage: this.state.currentPage - 1
+         },
+         () => {
+            const limit = this.state.postsPerPage;
+            const skip = (this.state.currentPage - 1) * limit;
+
+            API.get(`/posts`, { params: { limit, skip } }).then(res => {
+               this.setState({ posts: res.data });
+            });
+         }
+      );
    }
 
    next() {
-      this.setState({
-         currentPage: this.state.currentPage + 1
-      });
+      this.setState(
+         {
+            currentPage: this.state.currentPage + 1
+         },
+         () => {
+            const limit = this.state.postsPerPage;
+            const skip = (this.state.currentPage - 1) * limit;
+
+            API.get(`/posts`, { params: { limit, skip } }).then(res => {
+               this.setState({ posts: res.data });
+            });
+         }
+      );
    }
 
    last() {
-      this.setState({
-         currentPage: Math.ceil(
-            this.state.posts.length / this.state.postsPerPage
-         )
-      });
+      this.setState(
+         {
+            currentPage: this.state.pageLength
+         },
+         () => {
+            console.log(this.state.currentPage);
+            const limit = this.state.postsPerPage;
+            const skip = (this.state.currentPage - 1) * limit;
+
+            API.get(`/posts`, { params: { limit, skip } }).then(res => {
+               this.setState({ posts: res.data });
+            });
+         }
+      );
    }
 
    handleClick(event) {
-      this.setState({
-         currentPage: Number(event.target.id)
+      this.setState({ currentPage: Number(event.target.id) }, () => {
+         const limit = this.state.postsPerPage;
+         const skip = (this.state.currentPage - 1) * limit;
+
+         API.get(`/posts`, { params: { limit, skip } }).then(res => {
+            this.setState({ posts: res.data });
+         });
       });
    }
 
    render() {
       const disableButtom = { leftButton: false, rightButton: false };
-      const { posts, currentPage, postsPerPage } = this.state;
+      const { posts, currentPage, pageLength, pageRangeDisplayed } = this.state;
 
-      const indexOfLastPost = currentPage * postsPerPage;
-      const indexOfFirstPost = indexOfLastPost - postsPerPage;
-      const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
-
-      const renderPost = currentPosts.map((post, index) => {
+      const renderPost = posts.map((post, index) => {
          return <Post key={index} post={post} />;
       });
 
-      const pageRangeDisplayed = 10;
-      const pageLength = Math.ceil(posts.length / postsPerPage);
       const pageNumbers = [];
 
-		const calLastPageNum = Math.floor((currentPage - 1) / pageRangeDisplayed) * pageRangeDisplayed + pageRangeDisplayed
-
-		const firstPageNum = Math.floor((currentPage - 1) / pageRangeDisplayed) * pageRangeDisplayed + 1
-		const lastPageNum = calLastPageNum > pageLength ? pageLength : calLastPageNum
+      const calLastPageNum =
+         Math.floor((currentPage - 1) / pageRangeDisplayed) *
+            pageRangeDisplayed +
+         pageRangeDisplayed;
+      const firstPageNum =
+         Math.floor((currentPage - 1) / pageRangeDisplayed) *
+            pageRangeDisplayed +
+         1;
+      const lastPageNum =
+         calLastPageNum > pageLength ? pageLength : calLastPageNum;
 
       for (let i = firstPageNum; i < lastPageNum + 1; i++) {
          pageNumbers.push(i);
-		}
-		
+      }
+
       const renderPageNumbers = pageNumbers.map((number, index) => {
          return (
             <PaginationButton
@@ -134,8 +192,8 @@ class NewPost extends React.Component {
          );
       });
 
-      disableButtom.leftButton = currentPage == 1 ? true : false;
-      disableButtom.rightButton = currentPage == pageLength ? true : false;
+      disableButtom.leftButton = currentPage === 1 ? true : false;
+      disableButtom.rightButton = currentPage === pageLength ? true : false;
 
       return (
          <Content>

@@ -22,7 +22,7 @@ class PaginationButton extends React.Component {
       const number = this.props.number
       const activeColor = {}
 
-      if(number == this.props.currentPage) {
+      if(number === this.props.currentPage) {
          activeColor.backgroundColor = "#B5C9D4"
          activeColor.color = "#ffffff !important"
       }
