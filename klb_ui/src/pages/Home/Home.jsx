@@ -1,12 +1,11 @@
 import React from "react";
 import API from "../../module/api";
-import $ from "jquery";
 import styled from "styled-components";
-import { Row, Col } from "reactstrap";
-import { Button } from "reactstrap";
+import { Button, Row, Col } from "reactstrap";
+import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
+
 import Post from "../../components/Post.jsx";
 import PaginationButton from "../../components/Pagination.jsx";
-import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
 const Content = styled.div`
    background-color: #f9f9f9;
@@ -134,7 +133,6 @@ class NewPost extends React.Component {
             currentPage: this.state.pageLength
          },
          () => {
-            console.log(this.state.currentPage);
             const limit = this.state.postsPerPage;
             const skip = (this.state.currentPage - 1) * limit;
 
