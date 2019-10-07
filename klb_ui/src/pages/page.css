@@ -15,7 +15,7 @@ html {
   background-color: #F9F9F9;
   min-height: 100vh
 }
-
+/* 
 nav ul {
   list-style: none;
   display: flex;
@@ -34,7 +34,7 @@ nav ul li a {
 nav ul li a:hover {
   color: #B5C9D4;
   text-decoration: none;
-}
+} */
 
 .current {
   border-bottom: 3px solid white;

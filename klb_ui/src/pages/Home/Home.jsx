@@ -4,12 +4,14 @@ import styled from "styled-components";
 import { Button, Row, Col } from "reactstrap";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
-import Post from "../../components/Post.jsx";
+import PostHome from "../../components/PostHome.jsx";
 import PaginationButton from "../../components/Pagination.jsx";
+import { FaPlusCircle } from 'react-icons/fa'
+
 
 const Content = styled.div`
    background-color: #f9f9f9;
-   padding: 50px;
+   padding: 75px;
    color: #73777a;
 `;
 
@@ -54,6 +56,7 @@ class NewPost extends React.Component {
          pageRangeDisplayed: 10
       };
       this.handleClick = this.handleClick.bind(this);
+      this.routeChange = this.routeChange.bind(this);
       this.first = this.first.bind(this);
       this.previous = this.previous.bind(this);
       this.next = this.next.bind(this);
@@ -75,7 +78,8 @@ class NewPost extends React.Component {
       const skip = 0;
 
       API.get(`/posts`, { params: { limit, skip } }).then(res => {
-         this.setState({ posts: res.data });
+         const posts = res.data
+         this.setState({ posts });
       });
    }
 
@@ -89,7 +93,8 @@ class NewPost extends React.Component {
             const skip = (this.state.currentPage - 1) * limit;
 
             API.get(`/posts`, { params: { limit, skip } }).then(res => {
-               this.setState({ posts: res.data });
+               const posts = res.data
+               this.setState({ posts });
             });
          }
       );
@@ -105,7 +110,8 @@ class NewPost extends React.Component {
             const skip = (this.state.currentPage - 1) * limit;
 
             API.get(`/posts`, { params: { limit, skip } }).then(res => {
-               this.setState({ posts: res.data });
+               const posts = res.data
+               this.setState({ posts });
             });
          }
       );
@@ -121,7 +127,8 @@ class NewPost extends React.Component {
             const skip = (this.state.currentPage - 1) * limit;
 
             API.get(`/posts`, { params: { limit, skip } }).then(res => {
-               this.setState({ posts: res.data });
+               const posts = res.data
+               this.setState({ posts });
             });
          }
       );
@@ -137,7 +144,8 @@ class NewPost extends React.Component {
             const skip = (this.state.currentPage - 1) * limit;
 
             API.get(`/posts`, { params: { limit, skip } }).then(res => {
-               this.setState({ posts: res.data });
+               const posts = res.data
+               this.setState({ posts });
             });
          }
       );
@@ -149,9 +157,15 @@ class NewPost extends React.Component {
          const skip = (this.state.currentPage - 1) * limit;
 
          API.get(`/posts`, { params: { limit, skip } }).then(res => {
-            this.setState({ posts: res.data });
+            const posts = res.data
+            this.setState({ posts });
          });
       });
+   }
+
+   routeChange() {
+      let path = `/newpost`;
+      this.props.history.push(path);
    }
 
    render() {
@@ -159,7 +173,7 @@ class NewPost extends React.Component {
       const { posts, currentPage, pageLength, pageRangeDisplayed } = this.state;
 
       const renderPost = posts.map((post, index) => {
-         return <Post key={index} post={post} />;
+         return <PostHome key={index} post={post} />;
       });
 
       const pageNumbers = [];
@@ -202,7 +216,7 @@ class NewPost extends React.Component {
                         <Headline>Post</Headline>
                      </Col>
                      <Col>
-                        <ButtonNewPost className="float-right">
+                        <ButtonNewPost className="float-right" onClick={this.routeChange}>
                            New Post
                         </ButtonNewPost>
                      </Col>

@@ -9,7 +9,7 @@ import { Form, FormGroup, Label, Input, CustomInput, Button } from "reactstrap";
 
 const Content = styled.div`
    background-color: #f9f9f9;
-   padding: 50px;
+   padding: 75px;
    color: #73777a;
 `;
 
@@ -55,7 +55,6 @@ class NewPost extends React.Component {
                const postID = doc.data._id;
                console.log(doc.data);
                addFile(postID);
-               // window.location = "/public/file.html?post_id=" + postID
             })
             .catch(err => {
                console.log(err);
@@ -146,6 +145,7 @@ class NewPost extends React.Component {
                                  name="file"
                                  type="file"
                                  multiple="multiple"
+                                 className="w-50"
                                  bsSize="sm"
                               />
                            </FormGroup>

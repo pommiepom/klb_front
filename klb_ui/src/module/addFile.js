@@ -1,10 +1,6 @@
 import $ from 'jquery';
-import axios from 'axios'
 import Reflect from './reflect';
-
-const API = axios.create({
-   baseURL: 'http://localhost:8001/api'
-})
+import API from './api'
 
 const addFile = (post_id) => {
 	const config = {
