@@ -46,8 +46,6 @@ class Comment extends React.Component {
 			liked: false,
 			redirect: false
 		};
-		this.clickLike = this.clickLike.bind(this);
-
 	}
 
 	// static getDerivedStateFromProps(props, state) {
@@ -55,34 +53,6 @@ class Comment extends React.Component {
 	//       comment_id: props.match.params.id || ""
 	//    };
 	// }
-
-	clickLike() {
-		if (config.headers.jwt) { //log in
-			if (this.state.liked) {
-				console.log("unlike");
-				
-			}
-			else {
-				console.log("like");
-				// const data = {
-				//    likedBy: 
-	
-				// }
-				// API.post(`/likes`, config)
-				//    .then(res => {
-				//       console.log(res);
-				//    })
-				//    .catch(err => {
-				//       console.log(err)
-				//    });
-			}
-			this.setState({ liked: !this.state.liked })
-		}
-		else {
-			this.setState({ redirect: true })
-		}
-	  
-	}
 
 	componentDidMount() {
 		const order = this.props.index + 1
@@ -113,6 +83,33 @@ class Comment extends React.Component {
 				.catch(err => {
 					console.log(err);
 				});
+		}
+	}
+
+	clickLike = () => {
+		if (config.headers.jwt) { //log in
+			if (this.state.liked) {
+				console.log("unlike");
+				
+			}
+			else {
+				console.log("like");
+				// const data = {
+				//    likedBy: 
+	
+				// }
+				// API.post(`/likes`, config)
+				//    .then(res => {
+				//       console.log(res);
+				//    })
+				//    .catch(err => {
+				//       console.log(err)
+				//    });
+			}
+			this.setState({ liked: !this.state.liked })
+		}
+		else {
+			this.setState({ redirect: true })
 		}
 	}
 

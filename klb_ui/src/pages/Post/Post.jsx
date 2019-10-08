@@ -6,6 +6,7 @@ import { Container, Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
 import { FiHeart } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
+import { Redirect } from "react-router-dom";
 import File from "../../components/File.jsx";
 import Comment from "../../components/Comment.jsx";
 
@@ -62,6 +63,12 @@ const StyleCommentsNum = styled.p`
    text-align: center;
 `;
 
+const config = {
+   headers: {
+      jwt: localStorage.getItem("jwt")
+   }
+};
+
 class Post extends React.Component {
    constructor(props) {
       super(props);
@@ -72,7 +79,8 @@ class Post extends React.Component {
          like: "",
          files: [],
          comments: [],
-         liked: false
+         liked: false,
+         redirect: false
       };
    }
 
@@ -83,12 +91,6 @@ class Post extends React.Component {
    }
 
    componentDidMount() {
-      const config = {
-         headers: {
-            jwt: localStorage.getItem("jwt")
-         }
-      };
-
       API.get(`/posts/${this.state.post_id}`, config)
          .then(res => {
             const post = res.data[0];
@@ -135,6 +137,31 @@ class Post extends React.Component {
       }
    }
 
+   clickLike = () => {
+      if (config.headers.jwt) {
+         //log in
+         if (this.state.liked) {
+            console.log("unlike");
+         } else {
+            console.log("like");
+            // const data = {
+            //    likedBy:
+
+            // }
+            // API.post(`/likes`, config)
+            //    .then(res => {
+            //       console.log(res);
+            //    })
+            //    .catch(err => {
+            //       console.log(err)
+            //    });
+         }
+         this.setState({ liked: !this.state.liked });
+      } else {
+         this.setState({ redirect: true });
+      }
+   };
+
    render() {
       const files = this.state.files;
       const renderFile = files.map((file, index) => {
@@ -146,8 +173,8 @@ class Post extends React.Component {
          return <Comment key={index} index={index} comment={comment} />;
       });
 
-		const isLiked = this.state.liked;
-		
+		const { redirect, liked } = this.state;
+
       return (
          <Content>
             <Row>
@@ -195,11 +222,20 @@ class Post extends React.Component {
 
                      <Row>
                         <Col>
-                           {isLiked ? (
-                              <FaHeart style={{ color: "#D62323" }} />
+                           {liked ? (
+                              <FaHeart
+                                 onClick={this.clickLike}
+                                 style={{ color: "#D62323", cursor: "pointer" }}
+                              />
                            ) : (
-                              <FiHeart style={{ color: "#D62323" }} />
+                              <FiHeart
+                                 onClick={this.clickLike}
+                                 style={{ color: "#D62323", cursor: "pointer" }}
+                              />
                            )}
+
+                           {redirect && <Redirect to="/signin" />}
+
                            <StyledP className="text-center">
                               <Span />
                               {`${this.state.like} likes`}
