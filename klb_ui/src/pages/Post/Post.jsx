@@ -122,15 +122,17 @@ class Post extends React.Component {
          });
 
       // check user like
-      API.get(`/posts/${this.state.post_id}/checkuser`, config)
-         .then(res => {
-            res.data.length !== 0
-               ? this.setState({ liked: true })
-               : this.setState({ liked: false });
-         })
-         .catch(err => {
-            console.log(err);
-         });
+      if (config.headers.jwt) {
+         API.get(`/posts/${this.state.post_id}/checkuser`, config)
+            .then(res => {
+               res.data.length !== 0
+                  ? this.setState({ liked: true })
+                  : this.setState({ liked: false });
+            })
+            .catch(err => {
+               console.log(err);
+            });
+      }
    }
 
    render() {
