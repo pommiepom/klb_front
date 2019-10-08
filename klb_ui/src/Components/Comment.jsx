@@ -2,9 +2,9 @@ import React from "react";
 import API from "../module/api";
 import styled from "styled-components";
 import { Container, Row, Col } from "reactstrap";
-import { Link } from "react-router-dom";
 import moment from "moment";
 import { FiHeart } from 'react-icons/fi'
+import { FaHeart } from "react-icons/fa";
 
 const StyledComment = styled.div`
 	background-color: #ffffff;
@@ -26,6 +26,11 @@ const Span = styled.span`
    display: inline-block;
    width: 5px
 `
+const config = {
+   headers: {
+      jwt: localStorage.getItem("jwt")
+   }
+};
 
 class Comment extends React.Component {
    constructor(props) {
@@ -35,12 +40,39 @@ class Comment extends React.Component {
          message: "",
          username: "",
          date: "",
-         like: 0
-         // post: "",
-         // username: "",
-         // like: "",
-         // comment: ""
+         like: 0,
+         liked: false
       };
+      this.clickLike = this.clickLike.bind(this);
+
+   }
+
+   // static getDerivedStateFromProps(props, state) {
+   //    return {
+   //       comment_id: props.match.params.id || ""
+   //    };
+   // }
+
+   clickLike() {
+      if (this.state.liked) {
+         console.log("unlike");
+         
+      }
+      else {
+         console.log("like");
+         // const data = {
+         //    likedBy: 
+
+         // }
+         // API.post(`/likes`, config)
+         //    .then(res => {
+         //       console.log(res);
+         //    })
+         //    .catch(err => {
+         //       console.log(err)
+         //    });
+      }
+      this.setState({ liked: !this.state.liked })
    }
 
    componentDidMount() {
@@ -60,36 +92,22 @@ class Comment extends React.Component {
          .catch(err => {
             console.log(err)
          });
+
+      // check user like
+      API.get(`/comments/${this.props.comment._id}/checkuser`, config)
+         .then(res => {
+            res.data.length !== 0
+               ? this.setState({ liked: true })
+               : this.setState({ liked: false });
+         })
+         .catch(err => {
+            console.log(err);
+         });
    }
 
-   // UNSAFE_componentWillReceiveProps (nextProps) {
-   //    const post = nextProps.post || ""
-   //    const username = nextProps.post.createdBy.username || ""
-
-   //    this.setState({ post, username }, () => {
-   //       // get likes number
-   //       API.get(`/likes/count`, { params: { postID: this.state.post._id } })
-   //       .then(res => {
-   //          const like = res.data;
-   //          this.setState({ like })
-   //       })
-   //       .catch(err => {
-   //          console.log(err)
-   //       });
-
-   //       // get comments number
-   //       API.get(`/comments/count`, { params: { postID: this.state.post._id } })
-   //       .then(res => {
-   //          const comment = res.data;
-   //          this.setState({ comment })
-   //       })
-   //       .catch(err => {
-   //          console.log(err)
-   //       });
-   //    })
-   // }
-
    render() {
+		const isLiked = this.state.liked;
+
       return (
          <StyledComment>
             <Title>Comment {this.state.order}</Title>
@@ -102,7 +120,11 @@ class Comment extends React.Component {
             <Container fluid className="p-0">
                <Row>
                   <Col>
-                     <FiHeart style={{ color: "#D62323"}}/>
+                     {isLiked ? (
+                        <FaHeart onClick={this.clickLike} style={{ color: "#D62323", cursor: "pointer" }} />
+                     ) : (
+                        <FiHeart onClick={this.clickLike} style={{ color: "#D62323", cursor: "pointer" }} />
+                     )}
                      <StyledP>
                         <Span /> {`${this.state.like} likes`} 
                      </StyledP> 
