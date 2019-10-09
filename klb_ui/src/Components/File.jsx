@@ -21,12 +21,15 @@ class File extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
+         fileID: "",
          fileName: ""
       };
    }
 
    componentDidMount() {
       const fileID = this.props.file || ""
+      
+      this.setState({ fileID })
 
       API.get(`/files/${fileID}`)
          .then(res => {
@@ -39,11 +42,25 @@ class File extends React.Component {
          });
    }
 
+   showFile = () => {
+      API.get(`/files/show/${this.state.fileID}`)
+         .then(res => {
+            const url = res.config.url
+            const win = window.open(url, '_blank');
+            win.focus();
+            // // console.log(fileName.slice(0, -15));
+            // this.setState({ fileName: fileName.slice(0, -15) })
+         })
+         .catch(err => {
+            console.log(err)
+         });
+   }
+
    render() {
       return(
          <Row>
             <Col>
-               <StyledBadge>{this.state.fileName}<br /></StyledBadge>
+               <StyledBadge onClick={this.showFile}>{this.state.fileName}<br /></StyledBadge>
             </Col>
          </Row>
       )
