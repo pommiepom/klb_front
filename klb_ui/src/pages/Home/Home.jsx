@@ -55,12 +55,6 @@ class NewPost extends React.Component {
          pageLength: 1,
          pageRangeDisplayed: 10
       };
-      this.handleClick = this.handleClick.bind(this);
-      this.routeChange = this.routeChange.bind(this);
-      this.first = this.first.bind(this);
-      this.previous = this.previous.bind(this);
-      this.next = this.next.bind(this);
-      this.last = this.last.bind(this);
    }
 
    componentDidMount() {
@@ -83,7 +77,7 @@ class NewPost extends React.Component {
       });
    }
 
-   first() {
+   first = () => {
       this.setState(
          {
             currentPage: 1
@@ -100,7 +94,7 @@ class NewPost extends React.Component {
       );
    }
 
-   previous() {
+   previous = () => {
       this.setState(
          {
             currentPage: this.state.currentPage - 1
@@ -117,7 +111,7 @@ class NewPost extends React.Component {
       );
    }
 
-   next() {
+   next = () => {
       this.setState(
          {
             currentPage: this.state.currentPage + 1
@@ -134,7 +128,7 @@ class NewPost extends React.Component {
       );
    }
 
-   last() {
+   last = () => {
       this.setState(
          {
             currentPage: this.state.pageLength
@@ -151,7 +145,7 @@ class NewPost extends React.Component {
       );
    }
 
-   handleClick(event) {
+   handleClick = event => {
       this.setState({ currentPage: Number(event.target.id) }, () => {
          const limit = this.state.postsPerPage;
          const skip = (this.state.currentPage - 1) * limit;
@@ -163,7 +157,7 @@ class NewPost extends React.Component {
       });
    }
 
-   routeChange() {
+   routeChange = () => {
       let path = `/newpost`;
       this.props.history.push(path);
    }

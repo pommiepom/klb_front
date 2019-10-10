@@ -1,9 +1,10 @@
 import React from "react";
 import API from "../module/api";
+import moment from "moment";
 import styled from "styled-components";
 import { Row, Col } from "reactstrap";
+import { Badge } from 'reactstrap';
 import { Link } from "react-router-dom";
-import moment from "moment";
 import { FiHeart } from 'react-icons/fi'
 // import { FaCommentDots } from 'react-icons/fa'
 import { GoCommentDiscussion } from 'react-icons/go'
@@ -40,6 +41,19 @@ const StyledP = styled.p`
    margin: 0
    color: #73777a !important;
 `
+
+const StyledBadge = styled(Badge)`
+   color: #73777a !important;
+   background-color: transparent !important;
+   border: 1px solid #73777a !important;
+   font-weight: normal !important;
+   margin-left: 5px !important
+   :hover {
+      color: #515151;
+		cursor: pointer;
+		text-decoration: underline
+   }
+`;
 
 class PostHome extends React.Component {
    constructor(props) {
@@ -115,7 +129,7 @@ class PostHome extends React.Component {
                      <Col>
                         <Title>
                            <StyledLink to={`/post/${this.state.post._id}`}>{this.state.post.title}</StyledLink>
-                           {` [${this.state.post.category}]`}
+                           <StyledBadge >{this.state.post.category}<br /></StyledBadge>
                         </Title>
                      </Col>
                   </Row>

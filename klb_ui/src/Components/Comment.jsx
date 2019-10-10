@@ -38,11 +38,12 @@ class Comment extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			commentID: "",
 			order: "",
 			message: "",
 			username: "",
 			date: "",
-			like: 0,
+			likeNum: 0,
 			liked: false,
 			redirect: false
 		};
@@ -59,14 +60,15 @@ class Comment extends React.Component {
 		const message = this.props.comment.message
 		const username = this.props.comment.createdBy.username
 		const date = this.props.comment.date
+		const commentID = this.props.comment._id
 
-		this.setState({ order, message, username, date })
+		this.setState({ commentID, order, message, username, date })
 
 		// get likes number
-		API.get(`/likes/count`, { params: { commentID: this.props.comment._id } })
+		API.get(`/likes/count`, { params: { commentID } })
 			.then(res => {
-				const like = res.data;
-				this.setState({ like })
+				const likeNum = res.data;
+				this.setState({ likeNum })
 			})
 			.catch(err => {
 				console.log(err)
@@ -88,24 +90,28 @@ class Comment extends React.Component {
 
 	clickLike = () => {
 		if (config.headers.jwt) { //log in
+			const { likeNum } = this.state
+			const commentID = this.props.comment._id
+
 			if (this.state.liked) {
-				console.log("unlike");
-				
+				API.delete(`/likes/commentID=${commentID}`, config)
+					.then(() => {
+						this.setState({ likeNum: likeNum - 1 })
+					})
+					.catch(err => {
+						console.log(err);
+					})
 			}
 			else {
-				console.log("like");
-				// const data = {
-				//    likedBy: 
-	
-				// }
-				// API.post(`/likes`, config)
-				//    .then(res => {
-				//       console.log(res);
-				//    })
-				//    .catch(err => {
-				//       console.log(err)
-				//    });
+				API.post(`/likes`, { commentID: commentID}, config)
+				   .then(() => {
+				      this.setState({ likeNum: likeNum + 1 })
+				   })
+				   .catch(err => {
+				      console.log(err)
+					});
 			}
+
 			this.setState({ liked: !this.state.liked })
 		}
 		else {
@@ -114,7 +120,7 @@ class Comment extends React.Component {
 	}
 
 	render() {
-		const { redirect, liked } = this.state;
+		const { redirect, liked, likeNum } = this.state;
 
 		return (
 			<StyledComment>
@@ -142,7 +148,7 @@ class Comment extends React.Component {
 							}
 
 							<StyledP>
-								<Span /> {`${this.state.like} likes`} 
+								<Span /> {`${likeNum} likes`} 
 							</StyledP> 
 						</Col>
 						

@@ -7,6 +7,7 @@ import { Button } from "reactstrap";
 import { FiHeart } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { Redirect } from "react-router-dom";
+import { Badge } from 'reactstrap';
 import File from "../../components/File.jsx";
 import Comment from "../../components/Comment.jsx";
 
@@ -63,6 +64,14 @@ const StyleCommentsNum = styled.p`
    text-align: center;
 `;
 
+const StyledBadge = styled(Badge)`
+   color: #ffffff !important;
+   background-color: #B5C9D4 !important;
+   border: none!important;
+   font-weight: normal !important;
+   margin-left: 10px !important;
+`;
+
 const config = {
    headers: {
       jwt: localStorage.getItem("jwt")
@@ -74,9 +83,9 @@ class Post extends React.Component {
       super(props);
       this.state = {
          post: "",
-         post_id: "",
+         postID: "",
          username: "",
-         like: "",
+         likeNum: "",
          files: [],
          comments: [],
          liked: false,
@@ -86,35 +95,37 @@ class Post extends React.Component {
 
    static getDerivedStateFromProps(props, state) {
       return {
-         post_id: props.match.params.id || ""
+         postID: props.match.params.id || ""
       };
    }
 
    componentDidMount() {
-      API.get(`/posts/${this.state.post_id}`, config)
+      const postID = this.state.postID
+
+      API.get(`/posts/${postID}`, config)
          .then(res => {
             const post = res.data[0];
             const username = res.data[0].createdBy.username;
             const files = res.data[0].fileID;
 
-            this.setState({ post, username, files }, () => {});
+            this.setState({ post, username, files });
          })
          .catch(err => {
             console.log(err);
          });
 
       // get likes number
-      API.get(`/likes/count`, { params: { postID: this.state.post_id } })
+      API.get(`/likes/count`, { params: { postID } })
          .then(res => {
-            const like = res.data;
-            this.setState({ like });
+            const likeNum = res.data;
+            this.setState({ likeNum });
          })
          .catch(err => {
             console.log(err);
          });
 
       // get comments
-      API.get(`/posts/${this.state.post_id}/comments`)
+      API.get(`/posts/${postID}/comments`)
          .then(res => {
             const comments = res.data;
             this.setState({ comments });
@@ -125,7 +136,7 @@ class Post extends React.Component {
 
       // check user like
       if (config.headers.jwt) {
-         API.get(`/posts/${this.state.post_id}/checkuser`, config)
+         API.get(`/posts/${postID}/checkuser`, config)
             .then(res => {
                res.data.length !== 0
                   ? this.setState({ liked: true })
@@ -138,29 +149,34 @@ class Post extends React.Component {
    }
 
    clickLike = () => {
-      if (config.headers.jwt) {
-         //log in
-         if (this.state.liked) {
-            console.log("unlike");
-         } else {
-            console.log("like");
-            // const data = {
-            //    likedBy:
+		if (config.headers.jwt) { //log in
+			const { likeNum, postID, liked } = this.state
 
-            // }
-            // API.post(`/likes`, config)
-            //    .then(res => {
-            //       console.log(res);
-            //    })
-            //    .catch(err => {
-            //       console.log(err)
-            //    });
+			if (liked) {
+				API.delete(`/likes/postID=${postID}`, config)
+					.then(() => {
+						this.setState({ likeNum: likeNum - 1 })
+					})
+					.catch(err => {
+						console.log(err);
+					})
+			}
+			else {
+				API.post(`/likes`, { postID }, config)
+				   .then(() => {
+				      this.setState({ likeNum: likeNum + 1 })
+				   })
+				   .catch(err => {
+				      console.log(err)
+					});
          }
-         this.setState({ liked: !this.state.liked });
-      } else {
-         this.setState({ redirect: true });
-      }
-   };
+         
+			this.setState({ liked: !this.state.liked })
+		}
+		else {
+			this.setState({ redirect: true })
+		}
+   }
 
    render() {
       const files = this.state.files;
@@ -173,7 +189,7 @@ class Post extends React.Component {
          return <Comment key={index} index={index} comment={comment} />;
       });
 
-		const { redirect, liked } = this.state;
+      const { redirect, liked, likeNum } = this.state;
 
       return (
          <Content>
@@ -194,9 +210,8 @@ class Post extends React.Component {
                         <Col>
                            <p style={{ fontSize: "0.75em" }} className="m-0">
                               {this.state.username}
-                              <i>{` - ${moment(this.state.post.date).format(
-                                 "lll"
-                              )}`}</i>
+                              <i>{` - ${moment(this.state.post.date).format("lll")}`}</i>
+                              <StyledBadge >{this.state.post.category}</StyledBadge>
                            </p>
                         </Col>
                      </Row>
@@ -238,7 +253,7 @@ class Post extends React.Component {
 
                            <StyledP className="text-center">
                               <Span />
-                              {`${this.state.like} likes`}
+                              {`${likeNum} likes`}
                            </StyledP>
                         </Col>
                         <Col>
@@ -266,6 +281,7 @@ class Post extends React.Component {
                         <hr />
                      </Col>
                   </Row>
+
                   {comments.length > 0 && (
                      <div style={{ borderBottom: "1px solid #b8b8b8" }}>
                         {renderComment}
