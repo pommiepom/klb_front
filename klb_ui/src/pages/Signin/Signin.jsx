@@ -31,7 +31,6 @@ class Signin extends React.Component {
 			.then((res) => {
 				if(res && res.data) {
 					const token = res.data.token
-					// console.log(token);
 					localStorage.setItem('jwt', token || null)
 					this.props.history.push("/");
 				}

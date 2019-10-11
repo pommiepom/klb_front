@@ -12,143 +12,143 @@ import File from "../../components/File.jsx";
 import Comment from "../../components/Comment.jsx";
 
 const Content = styled.div`
-   background-color: #f9f9f9;
-   padding: 75px;
-   color: #73777a;
+	background-color: #f9f9f9;
+	padding: 75px;
+	color: #73777a;
 `;
 
 const StyledPost = styled.div`
-   background-color: #ffffff;
-   border: 1px solid #b8b8b8;
-   padding: 15px 35px;
-   color: 73777a;
+	background-color: #ffffff;
+	border: 1px solid #b8b8b8;
+	padding: 15px 35px;
+	color: 73777a;
 `;
 
 const Title = styled.p`
-   font-weight: bold;
-   margin-bottom: 0;
+	font-weight: bold;
+	margin-bottom: 0;
 `;
 const ButtonEdit = styled(Button)`
-   background-color: #fd7e47 !important;
-   border: none !important;
-   font-weight: bold !important;
-   font-size: 0.7em !important;
-   border-radius: 25px !important;
-   padding-left: 15px !important;
-   padding-right: 15px !important;
+	background-color: #fd7e47 !important;
+	border: none !important;
+	font-weight: bold !important;
+	font-size: 0.7em !important;
+	border-radius: 25px !important;
+	padding-left: 15px !important;
+	padding-right: 15px !important;
 `;
 
 const Span = styled.span`
-   display: inline-block;
-   width: 5px;
+	display: inline-block;
+	width: 5px;
 `;
 
 const StyledP = styled.p`
-   font-size: 0.75em;
-   display: inline-block;
-   margin: 0;
+	font-size: 0.75em;
+	display: inline-block;
+	margin: 0;
 `;
 
 const StyledDetail = styled.p`
-   white-space: pre-wrap;
-   display: inline-block;
-   font-size: 0.8em;
-   margin: 0;
-   text-align: justify;
+	white-space: pre-wrap;
+	display: inline-block;
+	font-size: 0.8em;
+	margin: 0;
+	text-align: justify;
 `;
 
 const StyleCommentsNum = styled.p`
-   display: inline-block;
-   font-size: 0.8em;
-   margin: 0;
-   text-align: center;
+	display: inline-block;
+	font-size: 0.8em;
+	margin: 0;
+	text-align: center;
 `;
 
 const StyledBadge = styled(Badge)`
-   color: #ffffff !important;
-   background-color: #B5C9D4 !important;
-   border: none!important;
-   font-weight: normal !important;
-   margin-left: 10px !important;
+	color: #ffffff !important;
+	background-color: #B5C9D4 !important;
+	border: none!important;
+	font-weight: normal !important;
+	margin-left: 10px !important;
 `;
 
 const config = {
-   headers: {
-      jwt: localStorage.getItem("jwt")
-   }
+	headers: {
+		jwt: localStorage.getItem("jwt")
+	}
 };
 
 class Post extends React.Component {
-   constructor(props) {
-      super(props);
-      this.state = {
-         post: "",
-         postID: "",
-         username: "",
-         likeNum: "",
-         files: [],
-         comments: [],
-         liked: false,
-         redirect: false
-      };
-   }
+	constructor(props) {
+		super(props);
+		this.state = {
+			post: "",
+			postID: "",
+			username: "",
+			likeNum: "",
+			files: [],
+			comments: [],
+			liked: false,
+			redirect: false
+		};
+	}
 
-   static getDerivedStateFromProps(props, state) {
-      return {
-         postID: props.match.params.id || ""
-      };
-   }
+	static getDerivedStateFromProps(props, state) {
+		return {
+			postID: props.match.params.id || ""
+		};
+	}
 
-   componentDidMount() {
-      const postID = this.state.postID
+	componentDidMount() {
+		const postID = this.state.postID
 
-      API.get(`/posts/${postID}`, config)
-         .then(res => {
-            const post = res.data[0];
-            const username = res.data[0].createdBy.username;
-            const files = res.data[0].fileID;
+		API.get(`/posts/${postID}`, config)
+			.then(res => {
+				const post = res.data[0];
+				const username = res.data[0].createdBy.username;
+				const files = res.data[0].fileID;
 
-            this.setState({ post, username, files });
-         })
-         .catch(err => {
-            console.log(err);
-         });
+				this.setState({ post, username, files });
+			})
+			.catch(err => {
+				console.log(err);
+			});
 
-      // get likes number
-      API.get(`/likes/count`, { params: { postID } })
-         .then(res => {
-            const likeNum = res.data;
-            this.setState({ likeNum });
-         })
-         .catch(err => {
-            console.log(err);
-         });
+		// get likes number
+		API.get(`/likes/count`, { params: { postID } })
+			.then(res => {
+				const likeNum = res.data;
+				this.setState({ likeNum });
+			})
+			.catch(err => {
+				console.log(err);
+			});
 
-      // get comments
-      API.get(`/posts/${postID}/comments`)
-         .then(res => {
-            const comments = res.data;
-            this.setState({ comments });
-         })
-         .catch(err => {
-            console.log(err);
-         });
+		// get comments
+		API.get(`/posts/${postID}/comments`)
+			.then(res => {
+				const comments = res.data;
+				this.setState({ comments });
+			})
+			.catch(err => {
+				console.log(err);
+			});
 
-      // check user like
-      if (config.headers.jwt) {
-         API.get(`/posts/${postID}/checkuser`, config)
-            .then(res => {
-               res.data.length !== 0
-                  ? this.setState({ liked: true })
-                  : this.setState({ liked: false });
-            })
-            .catch(err => {
-               console.log(err);
-            });
-      }
-   }
+		// check user like
+		if (config.headers.jwt) {
+			API.get(`/posts/${postID}/checkuser`, config)
+				.then(res => {
+					res.data.length !== 0
+						? this.setState({ liked: true })
+						: this.setState({ liked: false });
+				})
+				.catch(err => {
+					console.log(err);
+				});
+		}
+	}
 
-   clickLike = () => {
+	clickLike = () => {
 		if (config.headers.jwt) { //log in
 			const { likeNum, postID, liked } = this.state
 
@@ -163,135 +163,135 @@ class Post extends React.Component {
 			}
 			else {
 				API.post(`/likes`, { postID }, config)
-				   .then(() => {
-				      this.setState({ likeNum: likeNum + 1 })
-				   })
-				   .catch(err => {
-				      console.log(err)
+					.then(() => {
+						this.setState({ likeNum: likeNum + 1 })
+					})
+					.catch(err => {
+						console.log(err)
 					});
-         }
-         
+			}
+			
 			this.setState({ liked: !this.state.liked })
 		}
 		else {
 			this.setState({ redirect: true })
 		}
-   }
+	}
 
-   render() {
-      const files = this.state.files;
-      const renderFile = files.map((file, index) => {
-         return <File key={index} file={file} />;
-      });
+	render() {
+		const files = this.state.files;
+		const renderFile = files.map((file, index) => {
+			return <File key={index} file={file} />;
+		});
 
-      const comments = this.state.comments;
-      const renderComment = comments.map((comment, index) => {
-         return <Comment key={index} index={index} comment={comment} />;
-      });
+		const comments = this.state.comments;
+		const renderComment = comments.map((comment, index) => {
+			return <Comment key={index} index={index} comment={comment} />;
+		});
 
-      const { redirect, liked, likeNum } = this.state;
+		const { redirect, liked, likeNum } = this.state;
 
-      return (
-         <Content>
-            <Row>
-               <Col xs={7} className="mx-auto my-0">
-                  <StyledPost>
-                     <Row>
-                        <Col>
-                           <Title>{this.state.post.title}</Title>
-                        </Col>
-                        <Col>
-                           <ButtonEdit size="sm" className="float-right">
-                              EDIT
-                           </ButtonEdit>
-                        </Col>
-                     </Row>
-                     <Row>
-                        <Col>
-                           <p style={{ fontSize: "0.75em" }} className="m-0">
-                              {this.state.username}
-                              <i>{` - ${moment(this.state.post.date).format("lll")}`}</i>
-                              <StyledBadge >{this.state.post.category}</StyledBadge>
-                           </p>
-                        </Col>
-                     </Row>
-                     <hr style={{ marginTop: "5px", marginBottom: "20px" }} />
-                     <Container>
-                        <Row>
-                           <Col>
-                              <StyledDetail>
-                                 {this.state.post.detail}
-                              </StyledDetail>
-                           </Col>
-                        </Row>
-                        {files && (
-                           <Container
-                              style={{ marginTop: "10px", paddingLeft: 0 }}
-                           >
-                              {renderFile}
-                           </Container>
-                        )}
-                     </Container>
+		return (
+			<Content>
+				<Row>
+					<Col xs={7} className="mx-auto my-0">
+						<StyledPost>
+							<Row>
+								<Col>
+									<Title>{this.state.post.title}</Title>
+								</Col>
+								<Col>
+									<ButtonEdit size="sm" className="float-right">
+										EDIT
+									</ButtonEdit>
+								</Col>
+							</Row>
+							<Row>
+								<Col>
+									<p style={{ fontSize: "0.75em" }} className="m-0">
+										{this.state.username}
+										<i>{` - ${moment(this.state.post.date).format("lll")}`}</i>
+										<StyledBadge >{this.state.post.category}</StyledBadge>
+									</p>
+								</Col>
+							</Row>
+							<hr style={{ marginTop: "5px", marginBottom: "20px" }} />
+							<Container>
+								<Row>
+									<Col>
+										<StyledDetail>
+											{this.state.post.detail}
+										</StyledDetail>
+									</Col>
+								</Row>
+								{files && (
+									<Container
+										style={{ marginTop: "10px", paddingLeft: 0 }}
+									>
+										{renderFile}
+									</Container>
+								)}
+							</Container>
 
-                     <hr style={{ marginTop: "20px", marginBottom: "5px" }} />
+							<hr style={{ marginTop: "20px", marginBottom: "5px" }} />
 
-                     <Row>
-                        <Col>
-                           {liked ? (
-                              <FaHeart
-                                 onClick={this.clickLike}
-                                 style={{ color: "#D62323", cursor: "pointer" }}
-                              />
-                           ) : (
-                              <FiHeart
-                                 onClick={this.clickLike}
-                                 style={{ color: "#D62323", cursor: "pointer" }}
-                              />
-                           )}
+							<Row>
+								<Col>
+									{liked ? (
+										<FaHeart
+											onClick={this.clickLike}
+											style={{ color: "#D62323", cursor: "pointer" }}
+										/>
+									) : (
+										<FiHeart
+											onClick={this.clickLike}
+											style={{ color: "#D62323", cursor: "pointer" }}
+										/>
+									)}
 
-                           {redirect && <Redirect to="/signin" />}
+									{redirect && <Redirect to="/signin" />}
 
-                           <StyledP className="text-center">
-                              <Span />
-                              {`${likeNum} likes`}
-                           </StyledP>
-                        </Col>
-                        <Col>
-                           <p
-                              style={{ fontSize: "0.75em" }}
-                              className="m-0 float-right"
-                           >
-                              <i>{`last updated - ${moment(
-                                 this.state.post.lastUpdated
-                              ).format("lll")}`}</i>
-                           </p>
-                        </Col>
-                     </Row>
-                  </StyledPost>
-                  <Row className="my-4">
-                     <Col>
-                        <hr />
-                     </Col>
-                     <Col sm={2} className="mx-auto">
-                        <StyleCommentsNum>
-                           {this.state.comments.length} comments
-                        </StyleCommentsNum>
-                     </Col>
-                     <Col>
-                        <hr />
-                     </Col>
-                  </Row>
+									<StyledP className="text-center">
+										<Span />
+										{`${likeNum} likes`}
+									</StyledP>
+								</Col>
+								<Col>
+									<p
+										style={{ fontSize: "0.75em" }}
+										className="m-0 float-right"
+									>
+										<i>{`last updated - ${moment(
+											this.state.post.lastUpdated
+										).format("lll")}`}</i>
+									</p>
+								</Col>
+							</Row>
+						</StyledPost>
+						<Row className="my-4">
+							<Col>
+								<hr />
+							</Col>
+							<Col sm={2} className="mx-auto">
+								<StyleCommentsNum>
+									{this.state.comments.length} comments
+								</StyleCommentsNum>
+							</Col>
+							<Col>
+								<hr />
+							</Col>
+						</Row>
 
-                  {comments.length > 0 && (
-                     <div style={{ borderBottom: "1px solid #b8b8b8" }}>
-                        {renderComment}
-                     </div>
-                  )}
-               </Col>
-            </Row>
-         </Content>
-      );
-   }
+						{comments.length > 0 && (
+							<div style={{ borderBottom: "1px solid #b8b8b8" }}>
+								{renderComment}
+							</div>
+						)}
+					</Col>
+				</Row>
+			</Content>
+		);
+	}
 }
 
 export default Post;
