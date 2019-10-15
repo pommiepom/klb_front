@@ -82,7 +82,7 @@ class Navigation extends React.Component {
 				<Logo>Knowledge Base</Logo>
 				<Nav style={{ marginRight: "auto" }}>
 					<StyledNavItem>
-						<StyledNavLink exact activeClassName="current" to="/">
+						<StyledNavLink exact activeClassName="current" to="/page/1">
 							Home
 						</StyledNavLink>
 					</StyledNavItem>
@@ -101,7 +101,7 @@ class Navigation extends React.Component {
 					</StyledNavItem>
 				</Nav>
 
-				<UsernameNav to="/signin" className="float-right">
+				<UsernameNav to="/profile" className="float-right">
 					username <FaChevronDown />
 				</UsernameNav>
 			</StyledNavbar>

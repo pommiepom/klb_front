@@ -15,16 +15,16 @@ class PaginationButton extends React.Component {
          padding: 0;
       `
       
-      const StyledLink = styled(PaginationLink)`
-         border: 0px !important;
+		const StyledLink = styled(PaginationLink)`
+			box-shadow: none !important
       `
       
       const number = this.props.number
       const activeColor = {}
 
       if(number === this.props.currentPage) {
-         activeColor.backgroundColor = "#B5C9D4"
-         activeColor.color = "#ffffff !important"
+         activeColor.backgroundColor = "#e9ecef"
+			// activeColor.color = "#ffffff"
       }
 
 		return (

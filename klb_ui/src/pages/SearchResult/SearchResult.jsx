@@ -18,15 +18,6 @@ const Headline = styled.h1`
 	font-weight: bold;
 `;
 
-const ButtonNewPost = styled(Button)`
-	background-color: #fd7e47 !important;
-	border: none !important;
-	font-weight: bold !important;
-	border-radius: 25px !important;
-	padding-left: 15px !important;
-	padding-right: 15px !important;
-`;
-
 const StyledPagination = styled(Pagination)`
 	background-color: transparent;
 	border: 0px !important;
@@ -39,11 +30,9 @@ const StyledItem = styled(PaginationItem)`
 `;
 
 const StyledLink = styled(PaginationLink)`
-	box-shadow: none !important
-	// hover: {
-	// 	background-color: #b5c9d4 !important
-	// }
-`
+	color: #73777a;
+	border: 0px !important;
+`;
 
 class NewPost extends React.Component {
 	constructor(props) {
@@ -191,16 +180,9 @@ class NewPost extends React.Component {
 
 		const pageNumbers = [];
 
-		const calLastPageNum =
-			Math.floor((currentPage - 1) / pageRangeDisplayed) *
-				pageRangeDisplayed +
-			pageRangeDisplayed;
-		const firstPageNum =
-			Math.floor((currentPage - 1) / pageRangeDisplayed) *
-				pageRangeDisplayed +
-			1;
-		const lastPageNum =
-			calLastPageNum > pageLength ? pageLength : calLastPageNum;
+		const calLastPageNum = Math.floor((currentPage - 1) / pageRangeDisplayed) * pageRangeDisplayed + pageRangeDisplayed;
+		const firstPageNum = Math.floor((currentPage - 1) / pageRangeDisplayed) * pageRangeDisplayed + 1;
+		const lastPageNum = calLastPageNum > pageLength ? pageLength : calLastPageNum;
 
 		for (let i = firstPageNum; i < lastPageNum + 1; i++) {
 			pageNumbers.push(i);
@@ -226,15 +208,7 @@ class NewPost extends React.Component {
 					<Col xs={7} className="mx-auto my-0">
 						<Row>
 							<Col>
-								<Headline>Post</Headline>
-							</Col>
-							<Col>
-								<ButtonNewPost
-									className="float-right"
-									onClick={this.routeNewPost}
-								>
-									New Post
-								</ButtonNewPost>
+								<Headline>Search</Headline>
 							</Col>
 						</Row>
 						<div
@@ -255,7 +229,7 @@ class NewPost extends React.Component {
 							}}
 						>
 							<Row>
-								<Col  className="text-center" style={{ padding: "auto" }}>
+								<Col style={{ padding: "auto" }}>
 									<StyledPagination>
 										<StyledItem disabled={disableButtom.leftButton}>
 											<StyledLink first onClick={this.first} />

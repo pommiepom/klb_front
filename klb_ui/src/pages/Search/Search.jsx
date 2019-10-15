@@ -3,7 +3,7 @@ import styled from "styled-components";
 import API from "../../module/api";
 import { Row, Col } from "reactstrap";
 import { Card, CardBody } from "reactstrap";
-import { Form, FormGroup, Label, Input, CustomInput, Button } from "reactstrap";
+import { Form, FormGroup, Label, Input, Button } from "reactstrap";
 
 const Content = styled.div`
    background-color: #f9f9f9;
@@ -132,8 +132,8 @@ class Search extends React.Component {
                                     type="text"
                                     name="from"
                                     id="from"
-												bsSize="sm"
-												className="w-50"
+                                    bsSize="sm"
+                                    className="w-50"
                                     style={{ borderRadius: "7px" }}
                                  />
                               </Col>
@@ -147,32 +147,32 @@ class Search extends React.Component {
                               >
                                  From this date:
                               </StyledLable>
-										<Col className="pr-0">
-											<Input
-												onChange={this.myChangeHandler}
+                              <Col className="pr-0">
+                                 <Input
+                                    onChange={this.myChangeHandler}
                                     type="date"
                                     name="fromDate"
-												id="fromDate"
-												bsSize="sm"
+                                    id="fromDate"
+                                    bsSize="sm"
                                     style={{ borderRadius: "7px" }}
                                  />
                               </Col>
 
-										<StyledLable
+                              <StyledLable
                                  for="toDate"
                                  sm={2}
-											className="text-right"
+                                 className="text-right"
                               >
                                  To this date:
                               </StyledLable>
-										<Col className="pl-0">
-											<Input
-												onChange={this.myChangeHandler}
+                              <Col className="pl-0">
+                                 <Input
+                                    onChange={this.myChangeHandler}
                                     type="date"
                                     name="toDate"
-												id="toDate"
-												bsSize="sm"
-                                    style={{ borderRadius: "7px" }}
+                                    id="toDate"
+                                    bsSize="sm"
+												style={{ borderRadius: "7px" }}
                                  />
                               </Col>
                            </FormGroup>
