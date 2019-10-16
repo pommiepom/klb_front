@@ -38,7 +38,7 @@ class File extends React.Component {
             this.setState({ fileName: fileName.slice(0, -15) })
          })
          .catch(err => {
-            console.log(err)
+            console.error(err)
          });
    }
 
@@ -52,7 +52,7 @@ class File extends React.Component {
             // this.setState({ fileName: fileName.slice(0, -15) })
          })
          .catch(err => {
-            console.log(err)
+            console.error(err)
          });
    }
 

@@ -50,11 +50,10 @@ class Search extends React.Component {
       API.get(`/users/signedIn`, config)
          .then(res => {
             const user = res.data[0];
-            console.log(user);
             this.setState({ user });
          })
          .catch(err => {
-            console.log(err);
+            console.error(err);
          });
    }
 
@@ -83,7 +82,7 @@ class Search extends React.Component {
                               </Col>
                               <Col sm={10}>
                                  <StyledText>
-                                    {this.state.user.username}
+                                    {user.username}
                                  </StyledText>
                               </Col>
                            </Row>
@@ -95,7 +94,7 @@ class Search extends React.Component {
                               </Col>
                               <Col sm={10}>
                                  <StyledText>
-                                    {this.state.user.firstname}
+                                    {user.firstname}
                                  </StyledText>
                               </Col>
                            </Row>
@@ -107,7 +106,7 @@ class Search extends React.Component {
                               </Col>
                               <Col sm={10}>
                                  <StyledText>
-                                    {this.state.user.lastname}
+                                    {user.lastname}
                                  </StyledText>
                               </Col>
                            </Row>
@@ -119,7 +118,7 @@ class Search extends React.Component {
                               </Col>
                               <Col sm={10}>
                                  <StyledText>
-                                    {this.state.user.email}
+                                    {user.email}
                                  </StyledText>
                               </Col>
                            </Row>
@@ -131,7 +130,7 @@ class Search extends React.Component {
                               </Col>
                               <Col sm={10}>
                                  <StyledText>
-                                    {this.state.user.role}
+                                    {user.role}
                                  </StyledText>
                               </Col>
                            </Row>

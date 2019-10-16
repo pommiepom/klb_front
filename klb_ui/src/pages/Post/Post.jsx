@@ -144,13 +144,13 @@ class Post extends React.Component {
          });
 
       // get likes number
-      API.get(`/likes/count`, { params: { postID } })
+      API.get(`/posts/${postID}/likes/count`)
          .then(res => {
             const likeNum = res.data;
             this.setState({ likeNum });
          })
          .catch(err => {
-            console.err(err);
+            console.error(err);
          });
 
       API.get(`/posts/${postID}/comments/count`).then(res => {
@@ -174,16 +174,6 @@ class Post extends React.Component {
          }
       );
 
-      // get comments
-      // API.get(`/posts/${postID}/comments`)
-      // 	.then(res => {
-      // 		const comments = res.data;
-      // 		this.setState({ comments });
-      // 	})
-      // 	.catch(err => {
-      // 		console.log(err);
-      // 	});
-
       // check user like
       if (config.headers.jwt) {
          API.get(`/posts/${postID}/checkuser`, config)
@@ -204,7 +194,7 @@ class Post extends React.Component {
          const { likeNum, postID, liked } = this.state;
 
          if (liked) {
-            API.delete(`/likes/postID=${postID}`, config)
+            API.delete(`/likes/post/${postID}`, config)
                .then(() => {
                   this.setState({ likeNum: likeNum - 1 });
                })
@@ -476,6 +466,7 @@ class Post extends React.Component {
                   )}
                </Col>
             </Row>
+            <br/>
 
             <Container
                fluid
@@ -486,8 +477,8 @@ class Post extends React.Component {
                }}
             >
                <Row>
-                  <Col className="text-center" style={{ padding: "auto" }}>
-                     <StyledPagination>
+                  <Col>
+                     <StyledPagination className="d-flex justify-content-center">
                         <StyledItem disabled={disableButtom.leftButton}>
                            <StyledLink first onClick={this.first} />
                         </StyledItem>
@@ -505,6 +496,7 @@ class Post extends React.Component {
                   </Col>
                </Row>
             </Container>
+
          </Content>
       );
    }

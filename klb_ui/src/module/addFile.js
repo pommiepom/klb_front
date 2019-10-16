@@ -16,7 +16,6 @@ const addFile = (post_id) => {
 		API.get(`/posts/${post_id}/filenum`)
 			.then(res => {
 				const filenum = res.data.filenum
-				// console.log('count ', filenum + files.length);
 				if (filenum + files.length < 6) {
 					const promises = []
 
@@ -27,18 +26,15 @@ const addFile = (post_id) => {
 					}
 
 					Promise.all(promises.map(Reflect))
-						.then(doc => {
-							console.log(doc);
-						})
 						.catch(err => {
 							console.error(err);
 						})
 				} else {
-					console.log("can't upload over 5 files");
+					console.error("can't upload over 5 files");
 				}
 			})
 			.catch(err => {
-				console.log(err);
+				console.error(err);
 			})
 	}
 }

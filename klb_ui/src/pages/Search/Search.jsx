@@ -44,7 +44,7 @@ class Search extends React.Component {
             this.setState({ categories });
          })
          .catch(err => {
-            console.log(err);
+            console.error(err);
          });
    }
 

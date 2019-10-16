@@ -49,7 +49,7 @@ class NewPost extends React.Component {
 
 	componentDidMount() {
 		this.setState({ currentPage: Number(this.props.match.params.currentPage || 1) })
-		API.get(`/posts/count`).then(res => {
+		API.get(`/posts`).then(res => {
 			this.setState({ postsLength: res.data }, () => {
 				this.setState({
 					pageLength: Math.ceil(
@@ -69,9 +69,9 @@ class NewPost extends React.Component {
 	}
 
 	routeChange = () => {
-		console.log("route change", this.state.currentPage);
+		// console.log("route change", this.state.currentPage);
 		const path = `/page/${this.state.currentPage}`;
-		console.log(path);
+		// console.log(path);
 		this.props.history.push(path);
 	};
 
@@ -172,8 +172,6 @@ class NewPost extends React.Component {
 		const disableButtom = { leftButton: false, rightButton: false };
 		const { posts, currentPage, pageLength, pageRangeDisplayed } = this.state;
 
-		console.log("currentPage", currentPage); //////////////////////
-		
 		const renderPost = posts.map((post, index) => {
 			return <PostHome key={index} post={post} />;
 		});

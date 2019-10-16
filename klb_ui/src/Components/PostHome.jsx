@@ -72,23 +72,23 @@ class PostHome extends React.Component {
 
       this.setState({ post, username }, () => {
          // get likes number
-         API.get(`/likes/count`, { params: { postID: this.state.post._id } })
+         API.get(`/posts/${post._id}/likes/count`)
          .then(res => {
             const like = res.data;
             this.setState({ like })
          })
          .catch(err => {
-            console.log(err)
+            console.error(err)
          });
 
          // get comments number
-         API.get(`/comments/count`, { params: { postID: this.state.post._id } })
+         API.get(`/posts/${post._id}/comments/count`)
          .then(res => {
             const comment = res.data;
             this.setState({ comment })
          })
          .catch(err => {
-            console.log(err)
+            console.error(err)
          });
       })
    }
@@ -99,23 +99,23 @@ class PostHome extends React.Component {
 
       this.setState({ post, username }, () => {
          // get likes number
-         API.get(`/likes/count`, { params: { postID: this.state.post._id } })
+         API.get(`/posts/${post._id}/likes/count`)
          .then(res => {
             const like = res.data;
             this.setState({ like })
          })
          .catch(err => {
-            console.log(err)
+            console.error(err)
          });
 
          // get comments number
-         API.get(`/comments/count`, { params: { postID: this.state.post._id } })
+         API.get(`/posts/${post._id}/comments/count`)
          .then(res => {
             const comment = res.data;
             this.setState({ comment })
          })
          .catch(err => {
-            console.log(err)
+            console.error(err)
          });
       })
    }

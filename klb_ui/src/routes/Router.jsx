@@ -12,7 +12,7 @@ class Router extends React.Component {
 	render() {
 		return (
 			<Switch>
-				<Route exact path="/page/1" component={Home}></Route>
+				{/* <Route exact path="/page/1" component={Home}></Route> */}
 				<Route exact path="/profile" component={Profile}></Route>
 				<Route exact path="/page/:currentPage" component={Home}></Route>
 				<Route exact path="/newpost" component={NewPost}></Route>
