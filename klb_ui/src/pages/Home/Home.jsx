@@ -55,11 +55,11 @@ class NewPost extends React.Component {
 	}
 
 	componentDidMount() {
-		this.setState({
-			currentPage: Number(this.props.match.params.currentPage)
-		});
+		const currentPage = Number(this.props.match.params.currentPage)
 
-		if(this.state.currentPage > 0) {
+		this.setState({ currentPage });
+
+		if(currentPage > 0) {
 			API.get(`/posts/count`).then(res => {
 				this.setState({ postsLength: res.data }, () => {
 					this.setState({
@@ -71,7 +71,7 @@ class NewPost extends React.Component {
 			});
 	
 			const limit = this.state.postsPerPage;
-			const skip = (this.state.currentPage - 1) * limit;
+			const skip = (currentPage - 1) * limit;
 	
 			API.get(`/posts`, { params: { limit, skip } }).then(res => {
 				const posts = res.data;
@@ -114,7 +114,7 @@ class NewPost extends React.Component {
 		const currentPage = Number(event.target.id)
 		
 		if (currentPage !== this.state.currentPage) {
-			this.setState({ currentPage: Number(event.target.id) }, () => {
+			this.setState({ currentPage }, () => {
 				this.routeChange();
 			});
 		}

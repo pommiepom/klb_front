@@ -3,11 +3,11 @@ import API from "../module/api";
 import moment from "moment";
 import styled from "styled-components";
 import { Row, Col } from "reactstrap";
-import { Badge } from 'reactstrap';
+import { Badge } from "reactstrap";
 import { Link } from "react-router-dom";
-import { FiHeart } from 'react-icons/fi'
+import { FiHeart } from "react-icons/fi";
 // import { FaCommentDots } from 'react-icons/fa'
-import { GoCommentDiscussion } from 'react-icons/go'
+import { GoCommentDiscussion } from "react-icons/go";
 
 const Div = styled.div`
    background-color: #ffffff;
@@ -32,15 +32,15 @@ const StyledLink = styled(Link)`
 
 const Span = styled.span`
    display: inline-block;
-   width: 5px
-`
+   width: 5px;
+`;
 
 const StyledP = styled.p`
-   font-size: 0.75em;
-   display: inline-block;
-   margin: 0
-   color: #73777a !important;
-`
+	font-size: 0.75em;
+	display: inline-block;
+	margin: 0
+	color: #73777a !important;
+`;
 
 const StyledBadge = styled(Badge)`
    color: #73777a !important;
@@ -48,10 +48,10 @@ const StyledBadge = styled(Badge)`
    border: 1px solid #73777a !important;
    font-weight: normal !important;
    margin-left: 5px !important
-   :hover {
+	:hover {
       color: #515151;
-		cursor: pointer;
-		text-decoration: underline
+      cursor: pointer;
+      text-decoration: underline;
    }
 `;
 
@@ -67,57 +67,55 @@ class PostHome extends React.Component {
    }
 
    componentDidMount() {
-      const post = this.props.post || ""
-      const username = this.props.post.createdBy.username || ""
+      const post = this.props.post || "";
+      const username = this.props.post.createdBy.username || "";
 
       this.setState({ post, username }, () => {
-         // get likes number
-         API.get(`/posts/${post._id}/likes/count`)
-         .then(res => {
-            const like = res.data;
-            this.setState({ like })
-         })
-         .catch(err => {
-            console.error(err)
-         });
+         API.get(`/posts/${post._id}/likes/count`) // get likes number
+            .then(res => {
+               const like = res.data;
+               this.setState({ like });
+            })
+            .catch(err => {
+               console.error(err);
+            });
 
-         // get comments number
-         API.get(`/posts/${post._id}/comments/count`)
-         .then(res => {
-            const comment = res.data;
-            this.setState({ comment })
-         })
-         .catch(err => {
-            console.error(err)
-         });
-      })
+         API.get(`/posts/${post._id}/comments/count`) // get comments number
+            .then(res => {
+               const comment = res.data;
+               this.setState({ comment });
+            })
+            .catch(err => {
+               console.error(err);
+            });
+      });
    }
 
-   UNSAFE_componentWillReceiveProps (nextProps) {
-      const post = nextProps.post || ""
-      const username = nextProps.post.createdBy.username || ""
+   componentDidUpdate(prevProps, prevState) {
+      if (prevProps.post !== this.props.post) {
+         const post = this.props.post || "";
+         const username = this.props.post.createdBy.username || "";
 
-      this.setState({ post, username }, () => {
-         // get likes number
-         API.get(`/posts/${post._id}/likes/count`)
-         .then(res => {
-            const like = res.data;
-            this.setState({ like })
-         })
-         .catch(err => {
-            console.error(err)
-         });
+         this.setState({ post, username }, () => {
+            API.get(`/posts/${post._id}/likes/count`) // get likes number
+               .then(res => {
+                  const like = res.data;
+                  this.setState({ like });
+               })
+               .catch(err => {
+                  console.error(err);
+               });
 
-         // get comments number
-         API.get(`/posts/${post._id}/comments/count`)
-         .then(res => {
-            const comment = res.data;
-            this.setState({ comment })
-         })
-         .catch(err => {
-            console.error(err)
+            API.get(`/posts/${post._id}/comments/count`) // get comments number
+               .then(res => {
+                  const comment = res.data;
+                  this.setState({ comment });
+               })
+               .catch(err => {
+                  console.error(err);
+               });
          });
-      })
+      }
    }
 
    render() {
@@ -128,8 +126,13 @@ class PostHome extends React.Component {
                   <Row>
                      <Col>
                         <Title>
-                           <StyledLink to={`/post/${this.state.post._id}`}>{this.state.post.title}</StyledLink>
-                           <StyledBadge >{this.state.post.category}<br /></StyledBadge>
+                           <StyledLink to={`/post/${this.state.post._id}`}>
+                              {this.state.post.title}
+                           </StyledLink>
+                           <StyledBadge>
+                              {this.state.post.category}
+                              <br />
+                           </StyledBadge>
                         </Title>
                      </Col>
                   </Row>
@@ -137,7 +140,9 @@ class PostHome extends React.Component {
                      <Col>
                         <StyledP>
                            {`${this.state.username}`}
-                           <i>{` - ${moment(this.state.post.date).format("lll")}`}</i>
+                           <i>{` - ${moment(this.state.post.date).format(
+                              "lll"
+                           )}`}</i>
                         </StyledP>
                      </Col>
                   </Row>
@@ -147,8 +152,8 @@ class PostHome extends React.Component {
                      <Col className="text-right">
                         <StyledP>
                            {`${this.state.like} likes `} <Span />
-                        </StyledP> 
-                        <FiHeart style={{ color: "#D62323"}}/>
+                        </StyledP>
+                        <FiHeart style={{ color: "#D62323" }} />
                      </Col>
                   </Row>
                   <Row>
@@ -161,46 +166,6 @@ class PostHome extends React.Component {
                   </Row>
                </Col>
             </Row>
-
-
-
-
-
- 
-
-            {/* <Row>
-               <Col>
-                  <Title>
-                     <StyledLink to={`/post/${this.state.post._id}`}>{this.state.post.title}</StyledLink>
-                     {` [${this.state.post.category}]`}
-                  </Title>
-               </Col>
-               <Col sm={3}>
-                  <div className="float-right">
-                     <StyledP>
-                        {`${this.state.like} likes `} <Span />
-                     </StyledP> 
-                     <FiHeart style={{ color: "#D62323"}}/>
-                  </div>
-               </Col>
-            </Row>
-            
-            <Row>
-               <Col>
-                  <StyledP>
-                     {`${this.state.username}`}
-                     <i>{` - ${moment(this.state.post.date).format("lll")}`}</i>
-                  </StyledP>
-               </Col>
-               <Col sm={3}>
-                  <div className="float-right">
-                     <StyledP>
-                        {`${this.state.comment} comments`} <Span />
-                     </StyledP>
-                     <GoCommentDiscussion />
-                  </div>
-               </Col>
-            </Row>  */}
          </Div>
       );
    }

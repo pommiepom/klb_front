@@ -125,6 +125,7 @@ class Post extends React.Component {
    }
 
    componentDidMount() {
+      console.log("mount");
       this.setState({
          currentPage: Number(this.props.match.params.currentPage || 1)
       });
@@ -134,13 +135,13 @@ class Post extends React.Component {
       API.get(`/posts/${postID}`, config)
          .then(res => {
             const post = res.data[0];
-            const username = res.data[0].createdBy.username;
-            const files = res.data[0].fileID;
+            // const username = res.data[0].createdBy.username;
+            // const files = res.data[0].fileID;
 
-            this.setState({ post, username, files });
+            this.setState({ post });
          })
          .catch(err => {
-            console.err(err);
+            console.error(err);
          });
 
       // get likes number
@@ -190,7 +191,7 @@ class Post extends React.Component {
 
    clickLike = () => {
       if (config.headers.jwt) {
-         //log in
+         // logged in
          const { likeNum, postID, liked } = this.state;
 
          if (liked) {
@@ -211,96 +212,20 @@ class Post extends React.Component {
                });
          }
 
-         this.setState({ liked: !this.state.liked });
+         this.setState({ liked: !liked });
       } else {
          this.setState({ redirect: true });
       }
    };
 
-   first = () => {
-      this.setState(
-         {
-            currentPage: 1
-         },
-         () => {
-            const limit = this.state.commentsPerPage;
-            const skip = (this.state.currentPage - 1) * limit;
-            const postID = this.state.postID;
-
-            API.get(`/posts/${postID}/comments`, {
-               params: { limit, skip }
-            }).then(res => {
-               const comments = res.data;
-               this.setState({ comments });
-            });
-         }
-      );
-   };
-
-   previous = () => {
-      this.setState(
-         {
-            currentPage: this.state.currentPage - 1
-         },
-         () => {
-            const limit = this.state.commentsPerPage;
-            const skip = (this.state.currentPage - 1) * limit;
-            const postID = this.state.postID;
-
-            API.get(`/posts/${postID}/comments`, {
-               params: { limit, skip }
-            }).then(res => {
-               const comments = res.data;
-               this.setState({ comments });
-            });
-         }
-      );
-   };
-
-   next = () => {
-      this.setState(
-         {
-            currentPage: this.state.currentPage + 1
-         },
-         () => {
-            const limit = this.state.commentsPerPage;
-            const skip = (this.state.currentPage - 1) * limit;
-            const postID = this.state.postID;
-
-            API.get(`/posts/${postID}/comments`, {
-               params: { limit, skip }
-            }).then(res => {
-               const comments = res.data;
-               this.setState({ comments });
-            });
-         }
-      );
-   };
-
-   last = () => {
-      this.setState(
-         {
-            currentPage: this.state.pageLength
-         },
-         () => {
-            const limit = this.state.commentsPerPage;
-            const skip = (this.state.currentPage - 1) * limit;
-            const postID = this.state.postID;
-
-            API.get(`/posts/${postID}/comments`, {
-               params: { limit, skip }
-            }).then(res => {
-               const comments = res.data;
-               this.setState({ comments });
-            });
-         }
-      );
-   };
-
    handleClick = event => {
-      this.setState({ currentPage: Number(event.target.id) }, () => {
+      const currentPage = Number(event.target.id);
+
+      if (currentPage !== this.state.currentPage) {
+         this.setState({ currentPage });
+
          const limit = this.state.commentsPerPage;
-         const skip = (this.state.currentPage - 1) * limit;
+         const skip = (currentPage - 1) * limit;
          const postID = this.state.postID;
 
          API.get(`/posts/${postID}/comments`, { params: { limit, skip } }).then(
@@ -309,10 +234,26 @@ class Post extends React.Component {
                this.setState({ comments });
             }
          );
+      }
+   };
+
+   changePage = currentPage => {
+      this.setState({ currentPage }, () => {
+         const limit = this.state.commentsPerPage;
+         const skip = (currentPage - 1) * limit;
+         const postID = this.state.postID;
+
+         API.get(`/posts/${postID}/comments`, {
+            params: { limit, skip }
+         }).then(res => {
+            const comments = res.data;
+            this.setState({ comments });
+         });
       });
    };
 
    render() {
+      console.log("render");
       const disableButtom = { leftButton: false, rightButton: false };
       const { comments, files } = this.state;
       const { redirect, liked, likeNum } = this.state;
@@ -426,7 +367,7 @@ class Post extends React.Component {
                               />
                            )}
 
-                           {redirect && <Redirect to="/signin" />}
+                           {redirect && <Redirect to="/" />}
 
                            <StyledP className="text-center">
                               <Span />
@@ -466,7 +407,7 @@ class Post extends React.Component {
                   )}
                </Col>
             </Row>
-            <br/>
+            <br />
 
             <Container
                fluid
@@ -480,23 +421,40 @@ class Post extends React.Component {
                   <Col>
                      <StyledPagination className="d-flex justify-content-center">
                         <StyledItem disabled={disableButtom.leftButton}>
-                           <StyledLink first onClick={this.first} />
+                           <StyledLink
+                              first
+                              onClick={() => this.changePage(1)}
+                           />
                         </StyledItem>
                         <StyledItem disabled={disableButtom.leftButton}>
-                           <StyledLink previous onClick={this.previous} />
+                           <StyledLink
+                              previous
+                              onClick={() =>
+                                 this.changePage(this.state.currentPage - 1)
+                              }
+                           />
                         </StyledItem>
                         {renderPageNumbers}
                         <StyledItem disabled={disableButtom.rightButton}>
-                           <StyledLink next onClick={this.next} />
+                           <StyledLink
+                              next
+                              onClick={() =>
+                                 this.changePage(this.state.currentPage + 1)
+                              }
+                           />
                         </StyledItem>
                         <StyledItem disabled={disableButtom.rightButton}>
-                           <StyledLink last onClick={this.last} />
+                           <StyledLink
+                              last
+                              onClick={() =>
+                                 this.changePage(this.state.pageLength)
+                              }
+                           />
                         </StyledItem>
                      </StyledPagination>
                   </Col>
                </Row>
             </Container>
-
          </Content>
       );
    }
