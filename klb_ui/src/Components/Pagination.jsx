@@ -17,8 +17,8 @@ class PaginationButton extends React.Component {
       
 		const StyledLink = styled(PaginationLink)`
 			box-shadow: none !important
-      `
-      
+		`
+		
       const number = this.props.number
       const activeColor = {}
 
@@ -29,7 +29,7 @@ class PaginationButton extends React.Component {
 
 		return (
 			<StyledItem>
-				<StyledLink style={activeColor} key={number} id={number} onClick={this.props.handleClick}>
+				<StyledLink style={activeColor} key={number} id={number} onClick={this.props.changePage}>
 					{number}
  				</StyledLink> 
 			</StyledItem>
