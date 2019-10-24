@@ -119,12 +119,82 @@ const config = {
 	}
 };
 
+const getPost = postID => {
+	return API.get(`/posts/${postID}`, config)
+		.then(res => {
+			const post = Array.isArray(res.data) ? res.data[0] : res.data;
+
+			return { post };
+		})
+		.catch(err => {
+			console.error(err);
+			return err;
+		});
+};
+
+const getNumberOfLike = postID => {
+	return API.get(`/posts/${postID}/likes/count`)
+		.then(res => {
+			const likeNum = res.data;
+
+			return { likeNum };
+		})
+		.catch(err => {
+			console.error(err);
+			return err;
+		});
+};
+
+const checkUserLike = postID => {
+	if (config.headers.jwt) {
+		return API.get(`/posts/${postID}/checkuser`, config)
+			.then(res => {
+				const liked = res.data.length !== 0 ? true : false;
+
+				return { liked };
+			})
+			.catch(err => {
+				console.error(err);
+				return err;
+			});
+	}
+};
+
+const getComments = (postID, currentPage, commentsPerPage) => {
+	const limit = commentsPerPage;
+	const skip = (currentPage - 1) * limit;
+
+	return API.get(`/posts/${postID}/comments`, { params: { limit, skip } })
+		.then(res => {
+			const comments = res.data;
+
+			return { comments };
+		})
+		.catch(err => {
+			console.error(err);
+			return err;
+		});
+};
+
+const getCommentsLength = postID => {
+	return API.get(`/posts/${postID}/comments/count`)
+		.then(res => {
+			const commentsLength = res.data;
+
+			return { commentsLength };
+		})
+		.catch(err => {
+			console.error(err);
+			return err;
+		});
+};
+
 class Post extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			post: "",
 			postID: "",
+			post: "",
 			username: "",
 			likeNum: "",
 			files: [],
@@ -146,116 +216,67 @@ class Post extends React.Component {
 	}
 
 	componentDidMount() {
-		const { currentPage, postID } = this.state;
+		console.log("mount");
+		const { currentPage, postID, commentsPerPage } = this.state;
 
-		// this.setState({ currentPage });
+		Promise.all([
+			getPost(postID),
+			getNumberOfLike(postID),
+			checkUserLike(postID),
+			getComments(postID, currentPage, commentsPerPage),
+			getCommentsLength(postID)
+		]).then(values => {
+			const props = {};
+			const username = values[0].post.createdBy.username;
+			const pageLength = Math.ceil(
+				Object.values(values[4])[0] / commentsPerPage
+			);
 
-		API.get(`/posts/${postID}`, config)
-			.then(res => {
-				console.log(`api done /posts/${postID}`);
-				const post = Array.isArray(res.data) ? res.data[0] : res.data;
-				this.setState({ post });
-			})
-			.catch(err => {
-				console.error(err);
-			});
+			values[values.length] = { pageLength };
+			values[values.length] = { username };
 
-		// get likes number
-		API.get(`/posts/${postID}/likes/count`)
-			.then(res => {
-				console.log(`api done /posts/${postID}/likes/count`);
-				const likeNum = res.data;
-				this.setState({ likeNum });
-			})
-			.catch(err => {
-				console.error(err);
-			});
+			for (let i = 0; i < values.length; i++) {
+				const key = Object.keys(values[i])[0];
+				const val = Object.values(values[i])[0];
 
-		// check user like
-		if (config.headers.jwt) {
-			API.get(`/posts/${postID}/checkuser`, config)
-				.then(res => {
-					res.data.length !== 0
-						? this.setState({ liked: true })
-						: this.setState({ liked: false });
-				})
-				.catch(err => {
-					console.error(err);
-				});
-		}
-
-		API.get(`/posts/${postID}/comments/count`).then(res => {
-			this.setState({ commentsLength: res.data }, () => {
-				this.setState({
-					pageLength: Math.ceil(
-						this.state.commentsLength / this.state.commentsPerPage
-					)
-				});
-			});
-		});
-
-		// get comments
-		const limit = this.state.commentsPerPage;
-		const skip = (currentPage - 1) * limit;
-
-		API.get(`/posts/${postID}/comments`, { params: { limit, skip } }).then(
-			res => {
-				const comments = res.data;
-				this.setState({ comments });
+				props[key] = val;
 			}
-		);
+			this.setState(props);
+			console.log(this.state);
+		});
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		// console.log("commentsLength", this.state.commentsLength);
 		if (
 			prevState.commentsLength !== this.state.commentsLength ||
 			prevState.currentPage !== this.state.currentPage
 		) {
-			const { currentPage, postID } = this.state;
+			const { currentPage, postID, commentsPerPage } = this.state;
 
-			API.get(`/posts/${postID}`, config)
-				.then(res => {
-					const post = res.data[0];
-					this.setState({ post });
-				})
-				.catch(err => {
-					console.error(err);
-				});
+			Promise.all([
+				getPost(postID),
+				getNumberOfLike(postID),
+				checkUserLike(postID),
+				getComments(postID, currentPage, commentsPerPage),
+				getCommentsLength(postID)
+			]).then(values => {
+				const props = {};
+				const username = values[0].post.createdBy.username;
+				const pageLength = Math.ceil(
+					Object.values(values[4])[0] / commentsPerPage
+				);
 
-			// get likes number
-			API.get(`/posts/${postID}/likes/count`)
-				.then(res => {
-					const likeNum = res.data;
-					this.setState({ likeNum });
-				})
-				.catch(err => {
-					console.error(err);
-				});
+				values[values.length] = { pageLength };
+				values[values.length] = { username };
 
-			// check user like
-			if (config.headers.jwt) {
-				API.get(`/posts/${postID}/checkuser`, config)
-					.then(res => {
-						res.data.length !== 0
-							? this.setState({ liked: true })
-							: this.setState({ liked: false });
-					})
-					.catch(err => {
-						console.error(err);
-					});
-			}
+				for (let i = 0; i < values.length; i++) {
+					const key = Object.keys(values[i])[0];
+					const val = Object.values(values[i])[0];
 
-			// get comments
-			const limit = this.state.commentsPerPage;
-			const skip = (currentPage - 1) * limit;
-
-			API.get(`/posts/${postID}/comments`, { params: { limit, skip } }).then(
-				res => {
-					const comments = res.data;
-					this.setState({ comments });
+					props[key] = val;
 				}
-			);
+				this.setState(props);
+			});
 		}
 	}
 
@@ -274,30 +295,19 @@ class Post extends React.Component {
 		data.message = comment;
 		data.postID = postID;
 
-		console.log(data);
-
 		if (comment !== undefined && comment !== "") {
 			API.post("/comments", data, config)
-				.then(doc => {
-					console.log(doc);
-					this.setState(
-						{
-							commentsLength: this.state.commentsLength + 1
-						},
-						() => {
-							this.setState({
-								pageLength: Math.ceil(
-									this.state.commentsLength /
-										this.state.commentsPerPage
-								)
-							});
-						},
-						() => {
-							if (this.state.currentPage !== this.state.pageLength) {
-								this.setState({ currentPage: this.state.pageLength });
-							}
-						}
+				.then(() => {
+					const commentsLength = this.state.commentsLength + 1;
+					const pageLength = Math.ceil(
+						commentsLength / this.state.commentsPerPage
 					);
+
+					this.setState({
+						currentPage: pageLength,
+						pageLength,
+						commentsLength
+					});
 				})
 				.catch(err => {
 					console.error(err);
@@ -333,36 +343,31 @@ class Post extends React.Component {
 	};
 
 	changePage = currentPage => {
-		console.log("currentPage", currentPage);
-		console.log("this.state.currentPage", this.state.currentPage);
 		if (currentPage !== this.state.currentPage) {
-			this.setState({ currentPage }, () => {
-				const limit = this.state.commentsPerPage;
-				const skip = (currentPage - 1) * limit;
-				const postID = this.state.postID;
+			const limit = this.state.commentsPerPage;
+			const skip = (currentPage - 1) * limit;
+			const postID = this.state.postID;
 
-				API.get(`/posts/${postID}/comments`, {
-					params: { limit, skip }
-				}).then(res => {
+			API.get(`/posts/${postID}/comments`, { params: { limit, skip } }).then(
+				res => {
 					const comments = res.data;
-					this.setState({ comments });
-				});
-			});
+					this.setState({ currentPage, comments });
+				}
+			);
 		}
 	};
 
 	render() {
 		console.log("render");
 		const disableButtom = { leftButton: false, rightButton: false };
-		const { post, comments, files } = this.state;
+		const { post, comments, files, username } = this.state;
 		const { redirect, liked, likeNum } = this.state;
 		const { currentPage, pageLength, pageRangeDisplayed } = this.state;
-		// const cab = post.createdBy
-		// console.log("this.state.post.createdBy:", this.state.post.createdBy);
-		console.log(typeof this.state.post.createdBy);
+
 		const renderFile = files.map((file, index) => {
 			return <File key={index} file={file} />;
 		});
+
 		const renderComment = comments.map((comment, index) => {
 			return (
 				<Comment
@@ -425,11 +430,7 @@ class Post extends React.Component {
 								<Row>
 									<Col>
 										<p style={{ fontSize: "0.75em" }} className="m-0">
-											{/* {this.state.post.createdBy} */}
-											{/* <br></br>
-											{JSON.stringify(this.state.post)}
-											<br></br>
-											{typeof this.state.post} */}
+											{username}
 											<i>{` - ${moment(post.date).format(
 												"lll"
 											)}`}</i>
@@ -480,7 +481,11 @@ class Post extends React.Component {
 										)}
 
 										{redirect && (
-											<Route path="/signin" component={Signin} />
+											<Route
+												exact
+												path="/signin"
+												component={Signin}
+											/>
 										)}
 
 										<StyledP className="text-center">
