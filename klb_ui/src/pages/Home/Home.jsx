@@ -41,6 +41,32 @@ const StyledLink = styled(PaginationLink)`
    box-shadow: none !important;
 `;
 
+const getPostsLength = () => {
+   return API.get(`/posts/count`)
+      .then(res => {
+         const postsLength = res.data;
+
+         return { postsLength };
+      })
+      .catch(err => {
+         console.error(err);
+         return err;
+      });
+};
+
+const getPosts = query => {
+   return API.get(`/posts`, { params: query })
+      .then(res => {
+         const posts = res.data;
+
+         return { posts };
+      })
+      .catch(err => {
+         console.error(err);
+         return err;
+      });
+};
+
 class NewPost extends React.Component {
    constructor(props) {
       super(props);
@@ -56,67 +82,62 @@ class NewPost extends React.Component {
 
    componentDidMount() {
       const currentPage = Number(this.props.match.params.currentPage) || 1;
+      const { postsPerPage } = this.state;
 
-      this.setState({ currentPage });
+      const props = {};
+      const limit = postsPerPage;
+      const skip = (currentPage - 1) * limit;
+      const query = { limit, skip };
 
-      if (currentPage > 0) {
-         API.get(`/posts/count`).then(res => {
-            this.setState({ postsLength: res.data }, () => {
-               this.setState({
-                  pageLength: Math.ceil(
-                     this.state.postsLength / this.state.postsPerPage
-                  )
-               });
-            });
-         });
+      Promise.all([getPostsLength(), getPosts(query)]).then(values => {
+         const pageLength = Math.ceil(
+            Object.values(values[0])[0] / postsPerPage
+         );
 
-         const limit = this.state.postsPerPage;
-         const skip = (currentPage - 1) * limit;
-         const query = { limit, skip };
+         values[values.length] = { pageLength };
+         values[values.length] = { currentPage };
 
-         API.get(`/posts`, { params: query }).then(res => {
-            const posts = res.data;
-            this.setState({ posts });
-         });
-      }
+         for (let i = 0; i < values.length; i++) {
+            const key = Object.keys(values[i])[0];
+            const val = Object.values(values[i])[0];
+
+            props[key] = val;
+         }
+         this.setState(props);
+      });
    }
 
    componentDidUpdate(prevProps, prevState) {
-      if (isNaN(this.state.currentPage)) {
-         this.setState({ currentPage: 1 });
-      }
+      const currentPage = isNaN(this.props.match.params.currentPage)
+         ? 1
+         : Number(this.props.match.params.currentPage);
 
       if (
-         prevState.currentPage !== 0 &&
-         prevState.currentPage !== this.state.currentPage
-      ) {
-         API.get(`/posts/count`).then(res => {
-            this.setState({ postsLength: res.data }, () => {
-               this.setState({
-                  pageLength: Math.ceil(
-                     this.state.postsLength / this.state.postsPerPage
-                  )
-               });
-            });
-         });
-
-         const limit = this.state.postsPerPage;
-         const skip = (this.state.currentPage - 1) * limit;
-
-         API.get(`/posts`, { params: { limit, skip } }).then(res => {
-            const posts = res.data;
-            this.setState({ posts });
-         });
-      }
-   }
-
-   componentWillReceiveProps(newProps) {
-      if (
-         newProps.match.params.currentPage !==
+         prevProps.match.params.currentPage !==
          this.props.match.params.currentPage
       ) {
-         this.setState({
-            currentPage: Number(newProps.match.params.currentPage)
+         const { postsPerPage } = this.state;
+
+         const props = {};
+         const limit = postsPerPage;
+         const skip = (currentPage - 1) * limit;
+         const query = { limit, skip };
+
+         Promise.all([getPostsLength(), getPosts(query)]).then(values => {
+            const pageLength = Math.ceil(
+               Object.values(values[0])[0] / postsPerPage
+            );
+
+            values[values.length] = { pageLength };
+            values[values.length] = { currentPage };
+
+            for (let i = 0; i < values.length; i++) {
+               const key = Object.keys(values[i])[0];
+               const val = Object.values(values[i])[0];
+
+               props[key] = val;
+            }
+            this.setState(props);
          });
       }
    }
