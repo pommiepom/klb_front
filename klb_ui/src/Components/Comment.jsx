@@ -6,6 +6,8 @@ import moment from "moment";
 import { FiHeart } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { Redirect } from "react-router-dom";
+import { Switch, Route, Link } from "react-router-dom";
+import Signin from "../pages/Signin/Signin.jsx";
 
 const StyledComment = styled.div`
    background-color: #ffffff;
@@ -34,6 +36,34 @@ const config = {
    }
 };
 
+const getNumberOfLike = commentID => {
+   return API.get(`/likes/comment/${commentID}/count`)
+      .then(res => {
+         const likeNum = res.data;
+
+         return { likeNum };
+      })
+      .catch(err => {
+         console.error(err);
+         return err;
+      });
+};
+
+const checkUserLike = commentID => {
+   if (config.headers.jwt) {
+      return API.get(`/comments/${commentID}/checkuser`, config)
+         .then(res => {
+            const liked = res.data.length !== 0 ? true : false;
+
+            return { liked };
+         })
+         .catch(err => {
+            console.error(err);
+            return err;
+         });
+   }
+};
+
 class Comment extends React.Component {
    constructor(props) {
       super(props);
@@ -42,79 +72,53 @@ class Comment extends React.Component {
          likeNum: 0,
          liked: false,
          redirect: false
-		};
+      };
    }
 
-
-
    componentDidMount() {
-      const order = (this.props.currentPage - 1) * this.props.pageRangeDisplayed + this.props.index + 1;
       const commentID = this.props.comment._id;
+      const { currentPage, pageRangeDisplayed, index } = this.props;
 
-      this.setState({ order });
+      Promise.all([getNumberOfLike(commentID), checkUserLike(commentID)]).then(
+         values => {
+            const props = {};
+            const order = (currentPage - 1) * pageRangeDisplayed + index + 1;
 
-      // get likes number
-      API.get(`/likes/comment/${commentID}/count`)
-         .then(res => {
-            const likeNum = res.data;
-            this.setState({ likeNum });
-         })
-         .catch(err => {
-            console.error(err);
-         });
+            values[values.length] = { order };
 
-      // check user like
-      if (config.headers.jwt) {
-         API.get(`/comments/${commentID}/checkuser`, config)
-            .then(res => {
-               res.data.length !== 0
-                  ? this.setState(() => {
-                       return { liked: true };
-                    })
-                  : this.setState(() => {
-                       return { liked: false };
-                    });
-            })
-            .catch(err => {
-               console.error(err);
-            });
-      }
+            for (let i = 0; i < values.length; i++) {
+               const key = Object.keys(values[i])[0];
+               const val = Object.values(values[i])[0];
+
+               props[key] = val;
+            }
+            this.setState(props);
+         }
+      );
    }
 
    componentDidUpdate(prevProps) {
       if (prevProps.comment !== this.props.comment) {
-         const order = (this.props.currentPage - 1) * this.props.pageRangeDisplayed + this.props.index +1;
          const commentID = this.props.comment._id;
+         const { currentPage, pageRangeDisplayed, index } = this.props;
 
-         this.setState({ order });
+         Promise.all([
+            getNumberOfLike(commentID),
+            checkUserLike(commentID)
+         ]).then(values => {
+            const props = {};
+            const order = (currentPage - 1) * pageRangeDisplayed + index + 1;
 
-         // get likes number
-         API.get(`/likes/comment/${commentID}/count`)
-            .then(res => {
-					console.log("like", res);
-               const likeNum = res.data;
-               this.setState({ likeNum });
-            })
-            .catch(err => {
-               console.error(err);
-            });
+            values[values.length] = { order };
 
-         // check user like
-         if (config.headers.jwt) {
-            API.get(`/comments/${commentID}/checkuser`, config)
-               .then(res => {
-                  res.data.length !== 0
-                     ? this.setState(() => {
-                          return { liked: true };
-                       })
-                     : this.setState(() => {
-                          return { liked: false };
-                       });
-               })
-               .catch(err => {
-                  console.error(err);
-               });
-         }
+            for (let i = 0; i < values.length; i++) {
+               const key = Object.keys(values[i])[0];
+               const val = Object.values(values[i])[0];
+
+               props[key] = val;
+            }
+            this.setState(props);
+         });
       }
    }
 
@@ -180,7 +184,11 @@ class Comment extends React.Component {
                         />
                      )}
 
-                     {redirect && <Redirect to="/signin" />}
+                     {redirect && (
+                        <Route exact path="/signin" component={Signin} />
+                     )}
+                     {/* {redirect && <Redirect to={{ pathname: "/signin", state: { prevPath: this.props.location.pathname }}}/>} */}
+                     {/* {redirect && console.log(this.props.location)} */}
 
                      <StyledP>
                         <Span /> {`${likeNum} likes`}
