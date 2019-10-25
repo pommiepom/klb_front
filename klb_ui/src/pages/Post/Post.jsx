@@ -205,7 +205,7 @@ class Post extends React.Component {
 			currentPage: 1,
 			commentsPerPage: 10,
 			pageLength: 1,
-			pageRangeDisplayed: 10
+			pageRangeDisplayed: 5
 		};
 	}
 
@@ -216,7 +216,6 @@ class Post extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log("mount");
 		const { currentPage, postID, commentsPerPage } = this.state;
 
 		Promise.all([
@@ -242,7 +241,6 @@ class Post extends React.Component {
 				props[key] = val;
 			}
 			this.setState(props);
-			console.log(this.state);
 		});
 	}
 
@@ -358,11 +356,10 @@ class Post extends React.Component {
 	};
 
 	render() {
-		console.log("render");
 		const disableButtom = { leftButton: false, rightButton: false };
 		const { post, comments, files, username } = this.state;
 		const { redirect, liked, likeNum } = this.state;
-		const { currentPage, pageLength, pageRangeDisplayed } = this.state;
+		const { currentPage, pageLength, commentsPerPage, pageRangeDisplayed } = this.state;
 
 		const renderFile = files.map((file, index) => {
 			return <File key={index} file={file} />;
@@ -374,14 +371,13 @@ class Post extends React.Component {
 					key={index}
 					index={index}
 					currentPage={currentPage}
-					pageRangeDisplayed={pageRangeDisplayed}
+					commentsPerPage={commentsPerPage}
 					comment={comment}
 				/>
 			);
 		});
 
 		const pageNumbers = [];
-
 		const calLastPageNum =
 			Math.floor((currentPage - 1) / pageRangeDisplayed) *
 				pageRangeDisplayed +

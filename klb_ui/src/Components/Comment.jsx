@@ -77,12 +77,12 @@ class Comment extends React.Component {
 
    componentDidMount() {
       const commentID = this.props.comment._id;
-      const { currentPage, pageRangeDisplayed, index } = this.props;
+      const { currentPage, commentsPerPage, index } = this.props;
 
       Promise.all([getNumberOfLike(commentID), checkUserLike(commentID)]).then(
          values => {
             const props = {};
-            const order = (currentPage - 1) * pageRangeDisplayed + index + 1;
+            const order = (currentPage - 1) * commentsPerPage + index + 1;
 
             values[values.length] = { order };
 
@@ -100,14 +100,14 @@ class Comment extends React.Component {
    componentDidUpdate(prevProps) {
       if (prevProps.comment !== this.props.comment) {
          const commentID = this.props.comment._id;
-         const { currentPage, pageRangeDisplayed, index } = this.props;
+         const { currentPage, commentsPerPage, index } = this.props;
 
          Promise.all([
             getNumberOfLike(commentID),
             checkUserLike(commentID)
          ]).then(values => {
             const props = {};
-            const order = (currentPage - 1) * pageRangeDisplayed + index + 1;
+            const order = (currentPage - 1) * commentsPerPage + index + 1;
 
             values[values.length] = { order };
 
