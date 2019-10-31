@@ -2,11 +2,10 @@ import React from "react";
 import API from "../../module/api";
 import styled from "styled-components";
 import { Button, Container, Row, Col } from "reactstrap";
-import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
-import { Switch, Route, Link } from "react-router-dom";
+import Route from "react-router-dom";
 
 import PostHome from "../../components/PostHome.jsx";
-import PaginationButton from "../../components/Pagination.jsx";
+import PaginationComp from "../../components/Pagination.jsx";
 
 const Content = styled.div`
    background-color: #f9f9f9;
@@ -26,21 +25,6 @@ const ButtonNewPost = styled(Button)`
    border-radius: 25px !important;
    padding-left: 15px !important;
    padding-right: 15px !important;
-`;
-
-const StyledPagination = styled(Pagination)`
-   background-color: transparent;
-   border: 0px !important;
-   margin-left: auto;
-   margin-right: auto;
-`;
-
-const StyledItem = styled(PaginationItem)`
-   padding: 0;
-`;
-
-const StyledLink = styled(PaginationLink)`
-   box-shadow: none !important;
 `;
 
 const config = {
@@ -151,6 +135,7 @@ class NewPost extends React.Component {
    }
 
    changePage = currentPage => {
+      console.log(currentPage);
       if (currentPage !== this.state.currentPage) {
          this.setState({ currentPage }, () => {
             this.routeChange();
@@ -165,8 +150,7 @@ class NewPost extends React.Component {
 
    routeNewPost = () => {
       const path = config.headers.jwt ? `/newpost` : `/signin`;
-      // this.props.history.push(path);
-      return <Route exact path={path}></Route>
+      this.props.history.push(path);
    };
 
    render() {
@@ -193,17 +177,6 @@ class NewPost extends React.Component {
       for (let i = firstPageNum; i < lastPageNum + 1; i++) {
          pageNumbers.push(i);
       }
-
-      const renderPageNumbers = pageNumbers.map((number, index) => {
-         return (
-            <PaginationButton
-               changePage={() => this.changePage(number)}
-               key={index}
-               number={number}
-               currentPage={currentPage}
-            />
-         );
-      });
 
       disableButtom.leftButton = currentPage === 1 ? true : false;
       disableButtom.rightButton = currentPage === pageLength ? true : false;
@@ -235,64 +208,13 @@ class NewPost extends React.Component {
                         {renderPost}
                      </div>
 
-                     <Container
-                        fluid
-                        style={{
-                           marginLeft: "auto",
-                           marginRight: "auto",
-                           width: "auto"
-                        }}
-                     >
-                        <Row>
-                           <Col>
-                              <StyledPagination className="d-flex justify-content-center">
-                                 <StyledItem
-                                    disabled={disableButtom.leftButton}
-                                 >
-                                    <StyledLink
-                                       first
-                                       onClick={() => this.changePage(1)}
-                                    />
-                                 </StyledItem>
-                                 <StyledItem
-                                    disabled={disableButtom.leftButton}
-                                 >
-                                    <StyledLink
-                                       previous
-                                       onClick={() =>
-                                          this.changePage(
-                                             this.state.currentPage - 1
-                                          )
-                                       }
-                                    />
-                                 </StyledItem>
-                                 {renderPageNumbers}
-                                 <StyledItem
-                                    disabled={disableButtom.rightButton}
-                                 >
-                                    <StyledLink
-                                       next
-                                       onClick={() =>
-                                          this.changePage(
-                                             this.state.currentPage + 1
-                                          )
-                                       }
-                                    />
-                                 </StyledItem>
-                                 <StyledItem
-                                    disabled={disableButtom.rightButton}
-                                 >
-                                    <StyledLink
-                                       last
-                                       onClick={() =>
-                                          this.changePage(this.state.pageLength)
-                                       }
-                                    />
-                                 </StyledItem>
-                              </StyledPagination>
-                           </Col>
-                        </Row>
-                     </Container>
+                     <PaginationComp
+                        changePage={this.changePage}
+                        currentPage={currentPage}
+                        pageNumbers={pageNumbers}
+                        disableButtom={disableButtom}
+                        pageLength={pageLength}
+                     />
                   </Col>
                </Row>
             </Container>
