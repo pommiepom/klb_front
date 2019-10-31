@@ -6,7 +6,6 @@ import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
 import PostHome from "../../components/PostHome.jsx";
 import PaginationButton from "../../components/Pagination.jsx";
-// import { FaPlusCircle } from "react-icons/fa";
 
 const Content = styled.div`
 	background-color: #f9f9f9;
@@ -30,8 +29,7 @@ const StyledItem = styled(PaginationItem)`
 `;
 
 const StyledLink = styled(PaginationLink)`
-	color: #73777a;
-	border: 0px !important;
+box-shadow: none !important;
 `;
 
 class NewPost extends React.Component {
@@ -48,24 +46,32 @@ class NewPost extends React.Component {
 	}
 
 	componentDidMount() {
+		// this.props.history.goBack()
+		// console.log(this.props.history.goBack);
+		console.log(this.props.match.params);
 		this.setState({ currentPage: Number(this.props.match.params.currentPage || 1) })
-		API.get(`/posts`).then(res => {
+
+		API.get(`/posts/count`).then(res => {
 			this.setState({ postsLength: res.data }, () => {
 				this.setState({
 					pageLength: Math.ceil(
 						this.state.postsLength / this.state.postsPerPage
-					)
+						)
+					});
 				});
 			});
-		});
+			
+		// const query = this.props.match.params.parm.split("&") || this.props.match.params
 
-		const limit = this.state.postsPerPage;
-		const skip = 0;
-
-		API.get(`/posts`, { params: { limit, skip } }).then(res => {
-			const posts = res.data;
-			this.setState({ posts });
-		});
+		// console.log(query);
+		// console.log( this.props.match);
+		// query.limit = this.state.postsPerPage;
+		// query.skip = 0;
+		// API.get(`/posts`, { params: query }).then(res => {
+		// 	const posts = res.data;
+		// 	console.log(posts);
+		// 	// this.setState({ posts });
+		// });
 	}
 
 	routeChange = () => {
