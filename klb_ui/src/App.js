@@ -9,7 +9,7 @@ class App extends React.Component {
       return (
          <Switch>
             <Route exact path="/signin" component={Signin}></Route>
-            <Route path="/" component={Page}></Route>
+            <Page />
          </Switch>
       );
    }

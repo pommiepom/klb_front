@@ -13,15 +13,13 @@ class Router extends React.Component {
       return (
          <Switch>
             {/* <Route exact path="/page/1" component={Home}></Route> */}
-            <Route exact path="/profile" component={Profile}></Route>
-            <Route exact path="/page/:currentPage" component={Home}></Route>
-            <Route exact path="/newpost" component={NewPost}></Route>
-            <Route exact path="/search/title=:title&category=:category&fromUser=:fromUser&fromDate=:fromDate&toDate=:toDate"					
-               component={SearchResult}
-            ></Route>
-				<Route exact path="/search" component={Search}></Route>
-            <Route exact path="/post/:id" component={Post}></Route>
             <Route exact path="/" component={Home}></Route>
+            <Route path="/profile" component={Profile}></Route>
+            <Route path="/page/:currentPage" component={Home}></Route>
+            <Route path="/newpost" component={NewPost}></Route>
+            <Route exact path="/search" component={Search}></Route>
+            <Route path="/search/:params" component={SearchResult}></Route>
+            <Route path="/post/:id" component={Post}></Route>
          </Switch>
       );
    }

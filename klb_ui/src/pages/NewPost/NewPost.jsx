@@ -173,7 +173,7 @@ class NewPost extends React.Component {
                               />
                            </FormGroup>
 
-                           <RichTextEditor/>
+                           {/* <RichTextEditor/> */}
 
                            <br />
                            <Row>
