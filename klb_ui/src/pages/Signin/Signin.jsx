@@ -24,7 +24,7 @@ class Signin extends React.Component {
       this.state = { username: "", password: "", unauthen: false };
    }
 
-   mySubmitHandler = event => {
+   submitHandler = event => {
       event.preventDefault();
 
       const query = {};
@@ -45,7 +45,7 @@ class Signin extends React.Component {
          });
    };
 
-   myChangeHandler = event => {
+   changeHandler = event => {
       let name = event.target.name;
       let val = event.target.value;
       this.setState({ [name]: val });
@@ -69,13 +69,13 @@ class Signin extends React.Component {
                <Row>
                   <Col xs={8} className="mx-auto my-0">
                      <Form
-                        onSubmit={this.mySubmitHandler}
+                        onSubmit={this.submitHandler}
                         className="mx-auto my-0"
                         style={{ maxWidth: "350px" }}
                      >
                         <FormGroup>
                            <Input
-                              onChange={this.myChangeHandler}
+                              onChange={this.changeHandler}
                               type="text"
                               name="username"
                               id="username"
@@ -84,7 +84,7 @@ class Signin extends React.Component {
                         </FormGroup>
                         <FormGroup>
                            <Input
-                              onChange={this.myChangeHandler}
+                              onChange={this.changeHandler}
                               type="password"
                               name="password"
                               id="password"

@@ -13,7 +13,7 @@ const Div = styled.div`
    background-color: #ffffff;
    border: 1px solid #b8b8b8;
    border-bottom: none;
-   padding: 15px 25px;
+   padding: 10px 20px;
    color: 73777a;
 `;
 
@@ -55,70 +55,86 @@ const StyledBadge = styled(Badge)`
    }
 `;
 
+const getNumberOfLike = postID => {
+   return API.get(`/posts/${postID}/likes/count`)
+      .then(res => {
+         const likeNum = res.data;
+
+         return { likeNum };
+      })
+      .catch(err => {
+         console.error(err);
+         return err;
+      });
+};
+
+const getNumberOfComment = postID => {
+   return API.get(`/posts/${postID}/comments/count`)
+      .then(res => {
+         const commentNum = res.data;
+
+         return { commentNum };
+      })
+      .catch(err => {
+         console.error(err);
+         return err;
+      });
+};
+
 class PostHome extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
-         post: "",
-         username: "",
-         like: "",
-         comment: ""
+         likeNum: 0,
+         commentNum: 0
       };
    }
 
    componentDidMount() {
-      const post = this.props.post || "";
-      const username = this.props.post.createdBy.username || "";
+      const postID = this.props.post._id || "";
 
-      this.setState({ post, username }, () => {
-         API.get(`/posts/${post._id}/likes/count`) // get likes number
-            .then(res => {
-               const like = res.data;
-               this.setState({ like });
-            })
-            .catch(err => {
-               console.error(err);
-            });
+      Promise.all([getNumberOfLike(postID), getNumberOfComment(postID)]).then(
+         values => {
+            const props = {};
 
-         API.get(`/posts/${post._id}/comments/count`) // get comments number
-            .then(res => {
-               const comment = res.data;
-               this.setState({ comment });
-            })
-            .catch(err => {
-               console.error(err);
-            });
-      });
+            for (let i = 0; i < values.length; i++) {
+               const key = Object.keys(values[i])[0];
+               const val = Object.values(values[i])[0];
+
+               props[key] = val;
+            }
+            this.setState(props);
+         }
+      );
    }
 
    componentDidUpdate(prevProps, prevState) {
       if (prevProps.post !== this.props.post) {
-         const post = this.props.post || "";
-         const username = this.props.post.createdBy.username || "";
+         const postID = this.props.post._id || "";
 
-         this.setState({ post, username }, () => {
-            API.get(`/posts/${post._id}/likes/count`) // get likes number
-               .then(res => {
-                  const like = res.data;
-                  this.setState({ like });
-               })
-               .catch(err => {
-                  console.error(err);
-               });
+         Promise.all([
+            getNumberOfLike(postID),
+            getNumberOfComment(postID)
+         ]).then(values => {
+            const props = {};
 
-            API.get(`/posts/${post._id}/comments/count`) // get comments number
-               .then(res => {
-                  const comment = res.data;
-                  this.setState({ comment });
-               })
-               .catch(err => {
-                  console.error(err);
-               });
+            for (let i = 0; i < values.length; i++) {
+               const key = Object.keys(values[i])[0];
+               const val = Object.values(values[i])[0];
+
+               props[key] = val;
+            }
+            this.setState(props);
          });
       }
    }
 
    render() {
+      const postID = this.props.post._id;
+      const username = this.props.post.createdBy.username;
+      const { title, category, date } = this.props.post;
+      const { commentNum, likeNum } = this.state;
+
       return (
          <Div>
             <Row>
@@ -126,11 +142,11 @@ class PostHome extends React.Component {
                   <Row>
                      <Col>
                         <Title>
-                           <StyledLink to={`/post/${this.state.post._id}`}>
-                              {this.state.post.title}
+                           <StyledLink to={`/post/${postID}`}>
+                              {title}
                            </StyledLink>
                            <StyledBadge>
-                              {this.state.post.category}
+                              {category}
                               <br />
                            </StyledBadge>
                         </Title>
@@ -139,27 +155,24 @@ class PostHome extends React.Component {
                   <Row>
                      <Col>
                         <StyledP>
-                           {`${this.state.username}`}
-                           <i>{` - ${moment(this.state.post.date).format(
-                              "lll"
-                           )}`}</i>
+                           {`${username}`}
+                           <i>{` - ${moment(date).format("lll")}`}</i>
                         </StyledP>
                      </Col>
                   </Row>
                </Col>
-               <Col sm={3}>
+               <Col xs={12} md={3} className="pl-0">
                   <Row>
-                     <Col className="text-right">
+                     <Col xs={2} sm={6} md={0} />
+                     <Col xs={5} sm={3} md={12} className="text-right pl-0">
                         <StyledP>
-                           {`${this.state.like} likes `} <Span />
+                           {likeNum > 0 ? `${likeNum} likes` : `0 like`} <Span />
                         </StyledP>
                         <FiHeart style={{ color: "#D62323" }} />
                      </Col>
-                  </Row>
-                  <Row>
-                     <Col className="text-right">
+                     <Col xs={5} sm={3} md={12} className="text-right pl-0">
                         <StyledP>
-                           {`${this.state.comment} comments`} <Span />
+                           {commentNum > 0 ? `${commentNum} comments` : `0 comment`} <Span />
                         </StyledP>
                         <GoCommentDiscussion />
                      </Col>

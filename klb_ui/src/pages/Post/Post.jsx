@@ -4,12 +4,11 @@ import styled from "styled-components";
 import moment from "moment";
 import { FiHeart } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
-import { Redirect } from "react-router-dom";
 import { Badge } from "reactstrap";
 import { Container, Row, Col } from "reactstrap";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import { Form, FormGroup, Label, Input, Button } from "reactstrap";
-import { Switch, Route, Link } from "react-router-dom";
+import { Route} from "react-router-dom";
 
 import File from "../../components/File.jsx";
 import Signin from "../Signin/Signin.jsx";
@@ -227,12 +226,15 @@ class Post extends React.Component {
 		]).then(values => {
 			const props = {};
 			const username = values[0].post.createdBy.username;
+			const files = values[0].post.fileID
+
 			const pageLength = Math.ceil(
 				Object.values(values[4])[0] / commentsPerPage
 			);
 
 			values[values.length] = { pageLength };
 			values[values.length] = { username };
+			values[values.length] = { files };
 
 			for (let i = 0; i < values.length; i++) {
 				const key = Object.keys(values[i])[0];
@@ -260,12 +262,14 @@ class Post extends React.Component {
 			]).then(values => {
 				const props = {};
 				const username = values[0].post.createdBy.username;
+				const files = values[0].post.fileID
 				const pageLength = Math.ceil(
 					Object.values(values[4])[0] / commentsPerPage
 				);
 
 				values[values.length] = { pageLength };
 				values[values.length] = { username };
+				values[values.length] = { files };
 
 				for (let i = 0; i < values.length; i++) {
 					const key = Object.keys(values[i])[0];
@@ -417,7 +421,7 @@ class Post extends React.Component {
 									<Col>
 										<Title>{post.title}</Title>
 									</Col>
-									<Col>
+									<Col xs={2}>
 										<ButtonEdit size="sm" className="float-right">
 											EDIT
 										</ButtonEdit>

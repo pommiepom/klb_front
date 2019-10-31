@@ -3,13 +3,15 @@ import API from "../../module/api";
 import styled from "styled-components";
 import { Button, Container, Row, Col } from "reactstrap";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { Switch, Route, Link } from "react-router-dom";
 
 import PostHome from "../../components/PostHome.jsx";
 import PaginationButton from "../../components/Pagination.jsx";
 
 const Content = styled.div`
    background-color: #f9f9f9;
-   padding: 75px;
+   padding-bottom: 75px;
+   padding-top: 75px;
    color: #73777a;
 `;
 
@@ -40,6 +42,12 @@ const StyledItem = styled(PaginationItem)`
 const StyledLink = styled(PaginationLink)`
    box-shadow: none !important;
 `;
+
+const config = {
+   headers: {
+      jwt: localStorage.getItem("jwt")
+   }
+};
 
 const getPostsLength = () => {
    return API.get(`/posts/count`)
@@ -73,7 +81,7 @@ class NewPost extends React.Component {
       this.state = {
          posts: [],
          postsLength: 0,
-         currentPage: 0,
+         currentPage: 1,
          postsPerPage: 10,
          pageLength: 1,
          pageRangeDisplayed: 10
@@ -156,8 +164,9 @@ class NewPost extends React.Component {
    };
 
    routeNewPost = () => {
-      const path = `/newpost`;
-      this.props.history.push(path);
+      const path = config.headers.jwt ? `/newpost` : `/signin`;
+      // this.props.history.push(path);
+      return <Route exact path={path}></Route>
    };
 
    render() {
@@ -201,82 +210,92 @@ class NewPost extends React.Component {
 
       return (
          <Content>
-            <Row>
-               <Col xs={7} className="mx-auto my-0">
-                  <Row>
-                     <Col>
-                        <Headline>Post</Headline>
-                     </Col>
-                     <Col>
-                        <ButtonNewPost
-                           className="float-right"
-                           onClick={this.routeNewPost}
-                        >
-                           New Post
-                        </ButtonNewPost>
-                     </Col>
-                  </Row>
-                  <div
-                     style={{
-                        borderBottom: "1px solid #b8b8b8",
-                        marginBottom: "50px"
-                     }}
-                  >
-                     {renderPost}
-                  </div>
-
-                  <Container
-                     fluid
-                     style={{
-                        marginLeft: "auto",
-                        marginRight: "auto",
-                        width: "auto"
-                     }}
-                  >
+            <Container fluid>
+               <Row>
+                  <Col xs={10} sm={9} md={7} lg={6} className="mx-auto my-0">
                      <Row>
                         <Col>
-                           <StyledPagination className="d-flex justify-content-center">
-                              <StyledItem disabled={disableButtom.leftButton}>
-                                 <StyledLink
-                                    first
-                                    onClick={() => this.changePage(1)}
-                                 />
-                              </StyledItem>
-                              <StyledItem disabled={disableButtom.leftButton}>
-                                 <StyledLink
-                                    previous
-                                    onClick={() =>
-                                       this.changePage(
-                                          this.state.currentPage - 1
-                                       )
-                                    }
-                                 />
-                              </StyledItem>
-                              {renderPageNumbers}
-                              <StyledItem disabled={disableButtom.rightButton}>
-                                 <StyledLink
-                                    next
-                                    onClick={() =>
-                                       this.changePage(
-                                          this.state.currentPage + 1
-                                       )
-                                    }
-                                 />
-                              </StyledItem>
-                              <StyledItem disabled={disableButtom.rightButton}>
-                                 <StyledLink
-                                    last
-                                    onClick={() =>
-                                       this.changePage(this.state.pageLength)
-                                    }
-                                 />
-                              </StyledItem>
-                           </StyledPagination>
+                           <Headline>Post</Headline>
+                        </Col>
+                        <Col>
+                           <ButtonNewPost
+                              className="float-right"
+                              onClick={this.routeNewPost}
+                           >
+                              New Post
+                           </ButtonNewPost>
                         </Col>
                      </Row>
-                  </Container>
-               </Col>
-            </Row>
+                     <div
+                        style={{
+                           borderBottom: "1px solid #b8b8b8",
+                           marginBottom: "50px"
+                        }}
+                     >
+                        {renderPost}
+                     </div>
+
+                     <Container
+                        fluid
+                        style={{
+                           marginLeft: "auto",
+                           marginRight: "auto",
+                           width: "auto"
+                        }}
+                     >
+                        <Row>
+                           <Col>
+                              <StyledPagination className="d-flex justify-content-center">
+                                 <StyledItem
+                                    disabled={disableButtom.leftButton}
+                                 >
+                                    <StyledLink
+                                       first
+                                       onClick={() => this.changePage(1)}
+                                    />
+                                 </StyledItem>
+                                 <StyledItem
+                                    disabled={disableButtom.leftButton}
+                                 >
+                                    <StyledLink
+                                       previous
+                                       onClick={() =>
+                                          this.changePage(
+                                             this.state.currentPage - 1
+                                          )
+                                       }
+                                    />
+                                 </StyledItem>
+                                 {renderPageNumbers}
+                                 <StyledItem
+                                    disabled={disableButtom.rightButton}
+                                 >
+                                    <StyledLink
+                                       next
+                                       onClick={() =>
+                                          this.changePage(
+                                             this.state.currentPage + 1
+                                          )
+                                       }
+                                    />
+                                 </StyledItem>
+                                 <StyledItem
+                                    disabled={disableButtom.rightButton}
+                                 >
+                                    <StyledLink
+                                       last
+                                       onClick={() =>
+                                          this.changePage(this.state.pageLength)
+                                       }
+                                    />
+                                 </StyledItem>
+                              </StyledPagination>
+                           </Col>
+                        </Row>
+                     </Container>
+                  </Col>
+               </Row>
+            </Container>
          </Content>
       );
    }
