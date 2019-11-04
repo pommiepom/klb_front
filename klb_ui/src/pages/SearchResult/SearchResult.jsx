@@ -2,261 +2,191 @@ import React from "react";
 import API from "../../module/api";
 import styled from "styled-components";
 import { Button, Container, Row, Col } from "reactstrap";
-import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
-import PostHome from "../../components/PostHome.jsx";
-import PaginationButton from "../../components/Pagination.jsx";
+import PostComponent from "../../components/Post.jsx";
+import PaginationComp from "../../components/Pagination.jsx";
 
 const Content = styled.div`
-	background-color: #f9f9f9;
-	padding: 75px;
-	color: #73777a;
+   background-color: #f9f9f9;
+   padding: 75px;
+   color: #73777a;
 `;
 
 const Headline = styled.h1`
-	font-weight: bold;
+   font-weight: bold;
 `;
 
-const StyledPagination = styled(Pagination)`
-	background-color: transparent;
-	border: 0px !important;
-	margin-left: auto;
-	margin-right: auto;
-`;
+const getPostsLength = () => {
+   return API.get(`/posts/count`)
+      .then(res => {
+         const postsLength = res.data;
 
-const StyledItem = styled(PaginationItem)`
-	padding: 0;
-`;
+         return { postsLength };
+      })
+      .catch(err => {
+         console.error(err);
+         return err;
+      });
+};
 
-const StyledLink = styled(PaginationLink)`
-box-shadow: none !important;
-`;
+const getPosts = query => {
+   return API.get(`/posts`, { params: query })
+      .then(res => {
+         const posts = res.data;
+
+         return { posts };
+      })
+      .catch(err => {
+         console.error(err);
+         return err;
+      });
+};
 
 class NewPost extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			posts: [],
-			postsLength: 0,
-			currentPage: 1,
-			postsPerPage: 10,
-			pageLength: 1,
-			pageRangeDisplayed: 10
-		};
-	}
+   constructor(props) {
+      super(props);
+      this.state = {
+         posts: [],
+         postsLength: 0,
+         currentPage: 1,
+         postsPerPage: 10,
+         pageLength: 1,
+         pageRangeDisplayed: 10
+      };
+   }
 
-	componentDidMount() {
-		// this.props.history.goBack()
-		// console.log(this.props.history.goBack);
-		console.log(this.props.match.params);
-		this.setState({ currentPage: Number(this.props.match.params.currentPage || 1) })
+   componentDidMount() {
+      const { postsPerPage, currentPage } = this.state;
 
-		API.get(`/posts/count`).then(res => {
-			this.setState({ postsLength: res.data }, () => {
-				this.setState({
-					pageLength: Math.ceil(
-						this.state.postsLength / this.state.postsPerPage
-						)
-					});
-				});
-			});
-			
-		// const query = this.props.match.params.parm.split("&") || this.props.match.params
+      const props = {};
+      const query = this.props.match.params;
 
-		// console.log(query);
-		// console.log( this.props.match);
-		// query.limit = this.state.postsPerPage;
-		// query.skip = 0;
-		// API.get(`/posts`, { params: query }).then(res => {
-		// 	const posts = res.data;
-		// 	console.log(posts);
-		// 	// this.setState({ posts });
-		// });
-	}
+      query.limit = this.state.postsPerPage;
+      query.skip = 0;
 
-	routeChange = () => {
-		// console.log("route change", this.state.currentPage);
-		const path = `/page/${this.state.currentPage}`;
-		// console.log(path);
-		this.props.history.push(path);
-	};
+      Promise.all([getPostsLength(), getPosts(query)]).then(values => {
+         const pageLength = Math.ceil(
+            Object.values(values[0])[0] / postsPerPage
+         );
 
-	first = () => {
-		this.setState(
-			{
-				currentPage: 1
-			},
-			() => {
-				const limit = this.state.postsPerPage;
-				const skip = (this.state.currentPage - 1) * limit;
+         values[values.length] = { pageLength };
+         values[values.length] = { currentPage };
 
-				API.get(`/posts`, { params: { limit, skip } }).then(res => {
-					const posts = res.data;
-					this.setState({ posts });
-				});
-			}
-		);
-	};
+         for (let i = 0; i < values.length; i++) {
+            const key = Object.keys(values[i])[0];
+            const val = Object.values(values[i])[0];
 
-	previous = () => {
-		this.setState(
-			{
-				currentPage: this.state.currentPage - 1
-			},
-			() => {
-				const limit = this.state.postsPerPage;
-				const skip = (this.state.currentPage - 1) * limit;
+            props[key] = val;
+         }
+         this.setState(props);
+      });
+   }
 
-				API.get(`/posts`, { params: { limit, skip } }).then(res => {
-					const posts = res.data;
-					this.setState({ posts });
-				});
+   componentDidUpdate(prevProps, prevState) {
+      // const currentPage = this.state.currentPage
+      if (prevState.currentPage !== this.state.currentPage) {
+         const { postsPerPage, currentPage } = this.state;
 
-				this.routeChange()
-			}
-		);
-	};
+         const props = {};
+         const limit = postsPerPage;
+         const skip = (currentPage - 1) * limit;
+         const query = { limit, skip };
 
-	next = () => {
-		this.setState(
-			{
-				currentPage: this.state.currentPage + 1
-			},
-			() => {
-				const limit = this.state.postsPerPage;
-				const skip = (this.state.currentPage - 1) * limit;
+         Promise.all([getPostsLength(), getPosts(query)]).then(values => {
+            const pageLength = Math.ceil(
+               Object.values(values[0])[0] / postsPerPage
+            );
 
-				API.get(`/posts`, { params: { limit, skip } }).then(res => {
-					const posts = res.data;
-					this.setState({ posts });
-				});
+            values[values.length] = { pageLength };
+            values[values.length] = { currentPage };
 
-				this.routeChange()
-			}
-		);
-	};
+            for (let i = 0; i < values.length; i++) {
+               const key = Object.keys(values[i])[0];
+               const val = Object.values(values[i])[0];
 
-	last = () => {
-		this.setState(
-			{
-				currentPage: this.state.pageLength
-			},
-			() => {
-				const limit = this.state.postsPerPage;
-				const skip = (this.state.currentPage - 1) * limit;
+               props[key] = val;
+            }
+            this.setState(props);
+         });
+      }
+   }
 
-				API.get(`/posts`, { params: { limit, skip } }).then(res => {
-					const posts = res.data;
-					this.setState({ posts });
-				});
+   changePage = currentPage => {
+      if (currentPage !== this.state.currentPage) {
+         // const limit = this.state.commentsPerPage;
+         // const skip = (currentPage - 1) * limit;
+         this.setState({ currentPage });
+         // API.get(`/posts`, { params: { limit, skip } }).then(res => {
+         // 	const posts = res.data;
+         // 	this.setState({ currentPage, posts });
+         // });
+      }
+   };
+   routeNewPost = () => {
+      const path = `/newpost`;
+      this.props.history.push(path);
+   };
 
-				this.routeChange()
-			}
-		);
-	};
+   render() {
+      const disableButtom = { leftButton: false, rightButton: false };
+      const { posts, currentPage, pageLength, pageRangeDisplayed } = this.state;
 
-	handleClick = event => {
-		this.setState({ currentPage: Number(event.target.id) }, () => {
-			const limit = this.state.postsPerPage;
-			const skip = (this.state.currentPage - 1) * limit;
+      const renderPost = posts.map((post, index) => {
+         return <PostComponent key={index} post={post} />;
+      });
 
-			API.get(`/posts`, { params: { limit, skip } }).then(res => {
-				const posts = res.data;
-				this.setState({ posts });
-			});
+      const pageNumbers = [];
 
-			this.routeChange()
-		});
-	};
+      const calLastPageNum =
+         Math.floor((currentPage - 1) / pageRangeDisplayed) *
+            pageRangeDisplayed +
+         pageRangeDisplayed;
+      const firstPageNum =
+         Math.floor((currentPage - 1) / pageRangeDisplayed) *
+            pageRangeDisplayed +
+         1;
+      const lastPageNum =
+         calLastPageNum > pageLength ? pageLength : calLastPageNum;
 
-	routeNewPost = () => {
-		const path = `/newpost`;
-		this.props.history.push(path);
-	};
+      for (let i = firstPageNum; i < lastPageNum + 1; i++) {
+         pageNumbers.push(i);
+      }
 
-	render() {
-		const disableButtom = { leftButton: false, rightButton: false };
-		const { posts, currentPage, pageLength, pageRangeDisplayed } = this.state;
+      disableButtom.leftButton = currentPage === 1 ? true : false;
+      disableButtom.rightButton = currentPage === pageLength ? true : false;
 
-		const renderPost = posts.map((post, index) => {
-			return <PostHome key={index} post={post} />;
-		});
+      return (
+         <Content>
+            <Container fluid>
+               <Row>
+                  <Col xs={10} sm={9} md={7} lg={6} className="mx-auto my-0">
+                     <Row>
+                        <Col>
+                           <Headline>Search</Headline>
+                        </Col>
+                     </Row>
+                     <div
+                        style={{
+                           borderBottom: "1px solid #b8b8b8",
+                           marginBottom: "50px"
+                        }}
+                     >
+                        {renderPost}
+                     </div>
 
-		const pageNumbers = [];
-
-		const calLastPageNum = Math.floor((currentPage - 1) / pageRangeDisplayed) * pageRangeDisplayed + pageRangeDisplayed;
-		const firstPageNum = Math.floor((currentPage - 1) / pageRangeDisplayed) * pageRangeDisplayed + 1;
-		const lastPageNum = calLastPageNum > pageLength ? pageLength : calLastPageNum;
-
-		for (let i = firstPageNum; i < lastPageNum + 1; i++) {
-			pageNumbers.push(i);
-		}
-
-		const renderPageNumbers = pageNumbers.map((number, index) => {
-			return (
-				<PaginationButton
-					handleClick={this.handleClick}
-					key={index}
-					number={number}
-					currentPage={currentPage}
-				/>
-			);
-		});
-
-		disableButtom.leftButton = currentPage === 1 ? true : false;
-		disableButtom.rightButton = currentPage === pageLength ? true : false;
-
-		return (
-			<Content>
-				<Row>
-					<Col xs={7} className="mx-auto my-0">
-						<Row>
-							<Col>
-								<Headline>Search</Headline>
-							</Col>
-						</Row>
-						<div
-							style={{
-								borderBottom: "1px solid #b8b8b8",
-								marginBottom: "50px"
-							}}
-						>
-							{renderPost}
-						</div>
-
-						<Container
-							fluid
-							style={{
-								marginLeft: "auto",
-								marginRight: "auto",
-								width: "auto"
-							}}
-						>
-							<Row>
-								<Col style={{ padding: "auto" }}>
-									<StyledPagination>
-										<StyledItem disabled={disableButtom.leftButton}>
-											<StyledLink first onClick={this.first} />
-										</StyledItem>
-										<StyledItem disabled={disableButtom.leftButton}>
-											<StyledLink previous onClick={this.previous} />
-										</StyledItem>
-										{renderPageNumbers}
-										<StyledItem disabled={disableButtom.rightButton}>
-											<StyledLink next onClick={this.next} />
-										</StyledItem>
-										<StyledItem disabled={disableButtom.rightButton}>
-											<StyledLink last onClick={this.last} />
-										</StyledItem>
-									</StyledPagination>
-								</Col>
-							</Row>
-						</Container>
-					</Col>
-				</Row>
-			</Content>
-		);
-	}
+                     <PaginationComp
+                        changePage={this.changePage}
+                        currentPage={currentPage}
+                        pageNumbers={pageNumbers}
+                        disableButtom={disableButtom}
+                        pageLength={pageLength}
+                     />
+                  </Col>
+               </Row>
+            </Container>
+         </Content>
+      );
+   }
 }
 
 export default NewPost;
