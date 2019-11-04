@@ -5,9 +5,6 @@ import { Container, Row, Col } from "reactstrap";
 import moment from "moment";
 import { FiHeart } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
-import { Redirect } from "react-router-dom";
-import { Switch, Route, Link } from "react-router-dom";
-import Signin from "../pages/Signin/Signin.jsx";
 
 const StyledComment = styled.div`
    background-color: #ffffff;
@@ -146,7 +143,7 @@ class Comment extends React.Component {
          }
          this.setState({ liked: !this.state.liked });
       } else {
-         this.setState({ redirect: true });
+         this.props.history.push(`/signin`);
       }
    };
 
@@ -184,9 +181,9 @@ class Comment extends React.Component {
                         />
                      )}
 
-                     {redirect && (
+                     {/* {redirect && (
                         <Route exact path="/signin" component={Signin} />
-                     )}
+                     )} */}
                      {/* {redirect && <Redirect to={{ pathname: "/signin", state: { prevPath: this.props.location.pathname }}}/>} */}
                      {/* {redirect && console.log(this.props.location)} */}
 

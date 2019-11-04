@@ -2,9 +2,8 @@ import React from "react";
 import API from "../../module/api";
 import styled from "styled-components";
 import { Button, Container, Row, Col } from "reactstrap";
-import Route from "react-router-dom";
 
-import PostHome from "../../components/PostHome.jsx";
+import PostComponent from "../../components/Post.jsx";
 import PaginationComp from "../../components/Pagination.jsx";
 
 const Content = styled.div`
@@ -135,7 +134,6 @@ class NewPost extends React.Component {
    }
 
    changePage = currentPage => {
-      console.log(currentPage);
       if (currentPage !== this.state.currentPage) {
          this.setState({ currentPage }, () => {
             this.routeChange();
@@ -158,7 +156,7 @@ class NewPost extends React.Component {
       const { posts, currentPage, pageLength, pageRangeDisplayed } = this.state;
 
       const renderPost = posts.map((post, index) => {
-         return <PostHome key={index} post={post} />;
+         return <PostComponent key={index} post={post} />;
       });
 
       const pageNumbers = [];

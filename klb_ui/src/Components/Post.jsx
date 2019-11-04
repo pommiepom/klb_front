@@ -81,7 +81,7 @@ const getNumberOfComment = postID => {
       });
 };
 
-class PostHome extends React.Component {
+class PostComponent extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
@@ -184,4 +184,4 @@ class PostHome extends React.Component {
    }
 }
 
-export default PostHome;
+export default PostComponent;
