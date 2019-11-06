@@ -67,8 +67,7 @@ class Comment extends React.Component {
       this.state = {
          comment: this.props.comment || [],
          likeNum: 0,
-         liked: false,
-         redirect: false
+         liked: false
       };
    }
 
@@ -84,9 +83,8 @@ class Comment extends React.Component {
             values[values.length] = { order };
 
             for (let i = 0; i < values.length; i++) {
-               const key = Object.keys(values[i])[0];
-               const val = Object.values(values[i])[0];
-
+               const key = values[i] ? Object.keys(values[i])[0] : null;
+				   const val = values[i] ? Object.values(values[i])[0] : null;
                props[key] = val;
             }
             this.setState(props);
@@ -109,9 +107,8 @@ class Comment extends React.Component {
             values[values.length] = { order };
 
             for (let i = 0; i < values.length; i++) {
-               const key = Object.keys(values[i])[0];
-               const val = Object.values(values[i])[0];
-
+               const key = values[i] ? Object.keys(values[i])[0] : null;
+				   const val = values[i] ? Object.values(values[i])[0] : null;
                props[key] = val;
             }
             this.setState(props);
@@ -148,7 +145,7 @@ class Comment extends React.Component {
    };
 
    render() {
-      const { redirect, liked, likeNum, order } = this.state;
+      const { liked, likeNum, order } = this.state;
       const { message, date } = this.props.comment;
       const username = this.props.comment.createdBy.username;
 
@@ -180,12 +177,6 @@ class Comment extends React.Component {
                            style={{ color: "#D62323", cursor: "pointer" }}
                         />
                      )}
-
-                     {/* {redirect && (
-                        <Route exact path="/signin" component={Signin} />
-                     )} */}
-                     {/* {redirect && <Redirect to={{ pathname: "/signin", state: { prevPath: this.props.location.pathname }}}/>} */}
-                     {/* {redirect && console.log(this.props.location)} */}
 
                      <StyledP>
                         <Span /> {`${likeNum} likes`}

@@ -24,6 +24,10 @@ class Signin extends React.Component {
       this.state = { username: "", password: "", unauthen: false };
    }
 
+   goBack = () => {
+      this.props.history.goBack();
+  }
+
    submitHandler = event => {
       event.preventDefault();
 
@@ -36,7 +40,8 @@ class Signin extends React.Component {
             if (res && res.data) {
                const token = res.data.token;
                localStorage.setItem("jwt", token || null);
-               this.props.history.push("/page/1");
+               this.goBack()
+               // this.props.history.push("/page/1");
             }
          })
          .catch(err => {
