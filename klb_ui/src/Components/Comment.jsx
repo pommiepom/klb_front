@@ -179,7 +179,7 @@ class Comment extends React.Component {
                      )}
 
                      <StyledP>
-                        <Span /> {`${likeNum} likes`}
+                        <Span /> {likeNum > 1 ? `${likeNum} likes` : `${likeNum} like`}
                      </StyledP>
                   </Col>
 

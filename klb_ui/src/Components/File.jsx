@@ -34,7 +34,6 @@ class File extends React.Component {
       API.get(`/files/${fileID}`)
          .then(res => {
             const fileName = res.data[0].name
-            // console.log(fileName.slice(0, -15));
             this.setState({ fileName: fileName.slice(0, -15) })
          })
          .catch(err => {
@@ -48,8 +47,6 @@ class File extends React.Component {
             const url = res.config.url
             const win = window.open(url, '_blank');
             win.focus();
-            // // console.log(fileName.slice(0, -15));
-            // this.setState({ fileName: fileName.slice(0, -15) })
          })
          .catch(err => {
             console.error(err)
@@ -58,11 +55,10 @@ class File extends React.Component {
 
    render() {
       return(
-         <Row>
-            <Col>
-               <StyledBadge onClick={this.showFile}>{this.state.fileName}<br /></StyledBadge>
-            </Col>
-         </Row>
+         <div style={{ display: "inline-block" }}>
+            <StyledBadge onClick={this.showFile}>{this.state.fileName}<br /></StyledBadge>
+
+         </div>
       )
    }
 }
