@@ -13,11 +13,9 @@ import {
    DropdownMenu,
    DropdownItem
 } from "reactstrap";
-import { Route } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
 
 import File from "../../components/File.jsx";
-import Signin from "../Signin/Signin.jsx";
 import Comment from "../../components/Comment.jsx";
 import PaginationComp from "../../components/Pagination.jsx";
 
@@ -208,6 +206,7 @@ class Post extends React.Component {
          pageRangeDisplayed: 5,
          dropdownOpen: false
       };
+      this.myRef = React.createRef();
    }
 
    static getDerivedStateFromProps(props, state) {
@@ -281,6 +280,13 @@ class Post extends React.Component {
             }
             this.setState(props);
          });
+
+         if (prevState.currentPage !== this.state.currentPage) {
+            this.scrollToMyRef();
+         }
+         else {
+            window.scrollTo(0, 0);
+         }
       }
    }
 
@@ -357,9 +363,11 @@ class Post extends React.Component {
       this.setState({ dropdownOpen: !this.state.dropdownOpen });
    };
 
+   scrollToMyRef = () => window.scrollTo(0, this.myRef.current.offsetTop);
+
    render() {
       const disableButtom = { leftButton: false, rightButton: false };
-      const { post, comments, files, username } = this.state;
+      const { postID, post, comments, files, username } = this.state;
       const { userNow, liked, likeNum } = this.state;
       const {
          currentPage,
@@ -369,7 +377,11 @@ class Post extends React.Component {
       } = this.state;
 
       const renderFile = files.map((file, index) => {
-         return <File key={index} file={file} />;
+         return (
+            <div key={index}>
+               <File file={file} />
+            </div>
+         );
       });
 
       const renderComment = comments.map((comment, index) => {
@@ -425,7 +437,15 @@ class Post extends React.Component {
                                  </StyledDropdown>
                                  <DropdownMenu right>
                                     {username === userNow.username && (
-                                       <DropdownItem>Edit</DropdownItem>
+                                       <DropdownItem
+                                          onClick={() => {
+                                             this.props.history.push(
+                                                `/post/${postID}/edit`
+                                             );
+                                          }}
+                                       >
+                                          Edit
+                                       </DropdownItem>
                                     )}
                                     <DropdownItem>Report</DropdownItem>
                                     {userNow.role === "admin" && (
@@ -490,7 +510,9 @@ class Post extends React.Component {
 
                               <StyledP className="text-center">
                                  <Span />
-                                 {`${likeNum} likes`}
+                                 {likeNum > 1
+                                    ? `${likeNum} likes`
+                                    : `${likeNum} like`}
                               </StyledP>
                            </Col>
                            <Col>
@@ -517,7 +539,9 @@ class Post extends React.Component {
                            className="mx-auto text-center"
                         >
                            <StyleCommentsNum>
-                              {this.state.commentsLength} comments
+                              {this.state.commentsLength > 1
+                                 ? `${this.state.commentsLength} comments`
+                                 : `${this.state.commentsLength} comment`}
                            </StyleCommentsNum>
                         </Col>
                         <Col>
@@ -525,11 +549,13 @@ class Post extends React.Component {
                         </Col>
                      </Row>
 
-                     {comments.length > 0 && (
-                        <div style={{ borderBottom: "1px solid #b8b8b8" }}>
-                           {renderComment}
-                        </div>
-                     )}
+                     <div ref={this.myRef}>
+                        {comments.length > 0 && (
+                           <div style={{ borderBottom: "1px solid #b8b8b8" }}>
+                              {renderComment}
+                           </div>
+                        )}
+                     </div>
 
                      <br />
                      <PaginationComp

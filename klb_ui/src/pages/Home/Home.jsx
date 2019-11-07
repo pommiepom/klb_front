@@ -69,6 +69,7 @@ class NewPost extends React.Component {
          pageLength: 1,
          pageRangeDisplayed: 10
       };
+      this.myRef = React.createRef();
    }
 
    componentDidMount() {
@@ -96,6 +97,7 @@ class NewPost extends React.Component {
          }
          this.setState(props);
       });
+      this.scrollToMyRef()
    }
 
    componentDidUpdate(prevProps, prevState) {
@@ -130,6 +132,7 @@ class NewPost extends React.Component {
             }
             this.setState(props);
          });
+         this.scrollToMyRef()
       }
    }
 
@@ -150,6 +153,8 @@ class NewPost extends React.Component {
       const path = config.headers.jwt ? `/newpost` : `/signin`;
       this.props.history.push(path);
    };
+
+   scrollToMyRef = () => window.scrollTo(0, this.myRef.current.offsetTop);
 
    render() {
       const disableButtom = { leftButton: false, rightButton: false };
@@ -180,7 +185,7 @@ class NewPost extends React.Component {
       disableButtom.rightButton = currentPage === pageLength ? true : false;
 
       return (
-         <Content>
+         <Content ref={this.myRef}>
             <Container fluid>
                <Row>
                   <Col xs={10} sm={9} md={7} lg={6} className="mx-auto my-0">
