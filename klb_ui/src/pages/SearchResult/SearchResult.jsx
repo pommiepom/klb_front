@@ -16,8 +16,8 @@ const Headline = styled.h1`
    font-weight: bold;
 `;
 
-const getPostsLength = () => {
-   return API.get(`/posts/count`)
+const getPostsLength = query => {
+   return API.get(`/posts/count`, { params: query })
       .then(res => {
          const postsLength = res.data;
 
@@ -64,7 +64,7 @@ class NewPost extends React.Component {
       query.limit = this.state.postsPerPage;
       query.skip = 0;
 
-      Promise.all([getPostsLength(), getPosts(query)]).then(values => {
+      Promise.all([getPostsLength(query), getPosts(query)]).then(values => {
          const pageLength = Math.ceil(
             Object.values(values[0])[0] / postsPerPage
          );
@@ -86,13 +86,14 @@ class NewPost extends React.Component {
       // const currentPage = this.state.currentPage
       if (prevState.currentPage !== this.state.currentPage) {
          const { postsPerPage, currentPage } = this.state;
-
+         
          const props = {};
-         const limit = postsPerPage;
-         const skip = (currentPage - 1) * limit;
-         const query = { limit, skip };
+         const query = this.props.match.params;
 
-         Promise.all([getPostsLength(), getPosts(query)]).then(values => {
+         query.limit = postsPerPage;
+         query.skip = (currentPage - 1) * postsPerPage;
+
+         Promise.all([getPostsLength(query), getPosts(query)]).then(values => {
             const pageLength = Math.ceil(
                Object.values(values[0])[0] / postsPerPage
             );
@@ -113,15 +114,10 @@ class NewPost extends React.Component {
 
    changePage = currentPage => {
       if (currentPage !== this.state.currentPage) {
-         // const limit = this.state.commentsPerPage;
-         // const skip = (currentPage - 1) * limit;
          this.setState({ currentPage });
-         // API.get(`/posts`, { params: { limit, skip } }).then(res => {
-         // 	const posts = res.data;
-         // 	this.setState({ currentPage, posts });
-         // });
       }
    };
+   
    routeNewPost = () => {
       const path = `/newpost`;
       this.props.history.push(path);
