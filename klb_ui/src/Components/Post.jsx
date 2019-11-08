@@ -166,13 +166,19 @@ class PostComponent extends React.Component {
                      <Col xs={2} sm={6} md={0} />
                      <Col xs={5} sm={3} md={12} className="text-right pl-0">
                         <StyledP>
-                           {likeNum > 1 ? `${likeNum} likes` : `${likeNum} like`} <Span />
+                           {likeNum > 1
+                              ? `${likeNum} likes`
+                              : `${likeNum} like`}
+                           <Span />
                         </StyledP>
                         <FiHeart style={{ color: "#D62323" }} />
                      </Col>
                      <Col xs={5} sm={3} md={12} className="text-right pl-0">
                         <StyledP>
-                           {commentNum > 1 ? `${commentNum} comments` : `${commentNum} comment`} <Span />
+                           {commentNum > 1
+                              ? `${commentNum} comments`
+                              : `${commentNum} comment`}
+                           <Span />
                         </StyledP>
                         <GoCommentDiscussion />
                      </Col>

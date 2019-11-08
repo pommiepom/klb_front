@@ -1,7 +1,7 @@
 import React from 'react'
 import API from '../module/api'
 import { Badge } from 'reactstrap';
-import { Row, Col } from 'reactstrap';
+// import { Row, Col } from 'reactstrap';
 import styled from "styled-components";
 
 const StyledBadge = styled(Badge)`
@@ -57,7 +57,6 @@ class File extends React.Component {
       return(
          <div style={{ display: "inline-block" }}>
             <StyledBadge onClick={this.showFile}>{this.state.fileName}<br /></StyledBadge>
-
          </div>
       )
    }

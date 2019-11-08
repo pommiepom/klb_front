@@ -3,7 +3,7 @@ import $ from "jquery";
 import styled from "styled-components";
 import API from "../../module/api";
 import addFile from "../../module/addFile";
-import RichTextEditor from "../../components/RichTextEditor";
+// import RichTextEditor from "../../components/RichTextEditor";
 import { Row, Col } from "reactstrap";
 import { Card, CardBody } from "reactstrap";
 import { Form, FormGroup, Label, Input, CustomInput, Button } from "reactstrap";
@@ -72,9 +72,12 @@ class NewPost extends React.Component {
          API.post("/posts", data, config)
             .then(doc => {
                const postID = doc.data._id;
-               // console.log(doc.data);
                addFile(postID);
-               this.props.history.push(`/post/${postID}`)
+
+               return postID;
+            })
+            .then(postID => {
+               this.props.history.push(`/post/${postID}`);
             })
             .catch(err => {
                console.error(err);

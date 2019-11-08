@@ -74,9 +74,9 @@ const StyleCommentsNum = styled.p`
 `;
 
 const StyledBadge = styled(Badge)`
-   color: #ffffff !important;
-   background-color: #b5c9d4 !important;
-   border: none !important;
+   color: #73777a !important;
+   background-color: transparent !important;
+   border: solid 1px #73777a !important;
    font-weight: normal !important;
    margin-left: 10px !important;
 `;
@@ -179,7 +179,6 @@ const getUserNow = () => {
          const userNow = {};
          userNow.username = res.data[0].username;
          userNow.role = res.data[0].role;
-         // console.log(res.data[0]);
          return { userNow };
       })
       .catch(err => {
@@ -245,6 +244,7 @@ class Post extends React.Component {
          }
          this.setState(props);
       });
+      window.scrollTo(0, 0);
    }
 
    componentDidUpdate(prevProps, prevState) {
@@ -414,7 +414,7 @@ class Post extends React.Component {
 
       disableButtom.leftButton = currentPage === 1 ? true : false;
       disableButtom.rightButton = currentPage === pageLength ? true : false;
-      console.log("userNow.roleNow", userNow.role);
+
       return (
          <Content>
             <Container fluid>
