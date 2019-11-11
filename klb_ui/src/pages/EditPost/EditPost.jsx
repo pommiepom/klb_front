@@ -48,7 +48,6 @@ const getPost = postID => {
    return API.get(`/posts/${postID}`, config)
       .then(res => {
          const post = Array.isArray(res.data) ? res.data[0] : res.data;
-         // console.log(post);
          return { post };
       })
       .catch(err => {
@@ -61,7 +60,6 @@ const getFiles = postID => {
    return API.get(`/posts/${postID}/files`, config)
       .then(res => {
          const files = res.data
-         console.log(files);
          return { files };
       })
       .catch(err => {
@@ -113,7 +111,6 @@ class NewPost extends React.Component {
             const val = values[i] ? Object.values(values[i])[0] : null;
             props[key] = val;
          }
-         console.log(props);
          
          this.setState({
             categories: props.categories,
@@ -129,15 +126,13 @@ class NewPost extends React.Component {
 
    componentDidUpdate(prevProps, prevState) {
       if (
-         prevState.filesLength !== this.state.filesLength &&
-         prevState.filesLength !== 0
+         prevState.filesLength !== this.state.filesLength
       ) {
-         console.log("update");
          const postID = this.props.match.params.id;
 
          Promise.all([getFiles(postID)]).then(values => {
             const props = {};
-            console.log(values[0]);
+
             for (let i = 0; i < values.length; i++) {
                const key = values[i] ? Object.keys(values[i])[0] : null;
                const val = values[i] ? Object.values(values[i])[0] : null;
@@ -151,35 +146,27 @@ class NewPost extends React.Component {
             this.setState({
                files: props.files
             });
-            // console.log("files", this.state.files);
          });
          this.scrollToMyRef()
       }
    }
 
-   mySubmitHandler = event => {
-      event.preventDefault();
-
-      const files = $("#file").prop("files");
-      if (files.length < 6) {
-         const formData = new FormData($("form")[0]);
-         let data = {};
-
-         for (const [key, value] of formData.entries()) {
-            data[key] = value;
-         }
-
-         API.post("/posts", data, config)
-            .then(doc => {
-               const postID = doc.data._id;
-               addFile(postID);
-            })
-            .catch(err => {
-               console.error(err);
-            });
-      } else {
-         console.error("can't upload over 5 files");
+   mySubmitHandler = () => {
+      const postID = this.props.match.params.id;
+      const { title, category, detail } = this.state
+      const data = {
+         title: title,
+         category: category,
+         detail: detail
       }
+
+      API.patch(`/posts/${postID}`, data, config)
+         .then(() => {
+            this.props.history.push(`/post/${postID}`);
+         })
+         .catch(err => {
+            console.error(err);
+         });
    };
 
    submitFile = event => {
@@ -205,23 +192,7 @@ class NewPost extends React.Component {
       this.setState({ [name]: val });
    };
 
-   getDelFile = fileID => {
-      console.log("ID", fileID);
-      return (
-         <ConfirmModal
-            isOpen={true}
-            nextFnc={this.delFile(fileID)}
-            toggle={this.toggle}
-            header={`Delete File`}
-            body={`Are you sure you want to delete this file?`}
-            yes={`Delete`}
-            data={fileID}
-         />
-      );
-   };
-
    delFile = fileID => {
-      console.log("del");
       const { filesLength } = this.state
       const postID = this.props.match.params.id;
 
@@ -232,7 +203,6 @@ class NewPost extends React.Component {
          .catch(err => {
             console.log(err);
          });
-      // }
    };
 
    toggle = () => {
@@ -370,6 +340,7 @@ class NewPost extends React.Component {
                   </Card>
                </Col>
             </Row>
+            
             {this.state.modal && (
                <ConfirmModal
                   isOpen={this.state.modal}

@@ -48,11 +48,7 @@ const StyledBadge = styled(Badge)`
    border: 1px solid #73777a !important;
    font-weight: normal !important;
    margin-left: 5px !important
-	:hover {
-      color: #515151;
-      cursor: pointer;
-      text-decoration: underline;
-   }
+   font-size: 0.7em !important
 `;
 
 const getNumberOfLike = postID => {

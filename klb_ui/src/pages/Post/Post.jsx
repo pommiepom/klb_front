@@ -18,6 +18,7 @@ import { FaChevronDown } from "react-icons/fa";
 import File from "../../components/File.jsx";
 import Comment from "../../components/Comment.jsx";
 import PaginationComp from "../../components/Pagination.jsx";
+import ReportModal from "../../components/ReportModal";
 
 const Content = styled.div`
    background-color: #f9f9f9;
@@ -203,7 +204,8 @@ class Post extends React.Component {
          commentsPerPage: 10,
          pageLength: 1,
          pageRangeDisplayed: 5,
-         dropdownOpen: false
+         dropdownOpen: false,
+         modal: false
       };
       this.myRef = React.createRef();
    }
@@ -252,6 +254,7 @@ class Post extends React.Component {
          prevState.commentsLength !== this.state.commentsLength ||
          prevState.currentPage !== this.state.currentPage
       ) {
+
          const { currentPage, postID, commentsPerPage } = this.state;
 
          Promise.all([
@@ -281,10 +284,11 @@ class Post extends React.Component {
             this.setState(props);
          });
 
-         if (prevState.currentPage !== this.state.currentPage) {
+         if (
+            (prevState.currentPage !== this.state.currentPage)
+         ) {
             this.scrollToMyRef();
-         }
-         else {
+         } else {
             window.scrollTo(0, 0);
          }
       }
@@ -315,6 +319,7 @@ class Post extends React.Component {
 
                this.setState({
                   currentPage: pageLength,
+                  comment: "",
                   pageLength,
                   commentsLength
                });
@@ -358,9 +363,28 @@ class Post extends React.Component {
       }
    };
 
-   toggle = () => {
-      console.log("toggle");
+   // reportHandler = () => {
+   //    console.log("in");
+   //    // console.log("ID", fileID);
+   //    return (
+   //       <ReportModal
+   //          isOpen={true}
+   //          nextFnc={this.submitReport}
+   //          toggle={this.toggle}
+   //       />
+   //    );
+   // };
+
+   submitReport = () => {
+      
+   }
+
+   toggleDropdown = () => {
       this.setState({ dropdownOpen: !this.state.dropdownOpen });
+   };
+
+   toggle = () => {
+      this.setState({ modal: !this.state.modal });
    };
 
    scrollToMyRef = () => window.scrollTo(0, this.myRef.current.offsetTop);
@@ -373,7 +397,8 @@ class Post extends React.Component {
          currentPage,
          pageLength,
          commentsPerPage,
-         pageRangeDisplayed
+         pageRangeDisplayed,
+         commentsLength
       } = this.state;
 
       const renderFile = files.map((file, index) => {
@@ -413,7 +438,8 @@ class Post extends React.Component {
       }
 
       disableButtom.leftButton = currentPage === 1 ? true : false;
-      disableButtom.rightButton = currentPage === pageLength ? true : false;
+      disableButtom.rightButton =
+         (currentPage === pageLength) | (commentsLength === 0) ? true : false;
 
       return (
          <Content>
@@ -425,35 +451,39 @@ class Post extends React.Component {
                            <Col>
                               <Title>{post.title}</Title>
                            </Col>
-                           <Col xs={2}>
-                              <Dropdown
-                                 className="float-right"
-                                 size="sm"
-                                 isOpen={this.state.dropdownOpen}
-                                 toggle={this.toggle}
-                              >
-                                 <StyledDropdown>
-                                    <FaChevronDown />
-                                 </StyledDropdown>
-                                 <DropdownMenu right>
-                                    {username === userNow.username && (
-                                       <DropdownItem
-                                          onClick={() => {
-                                             this.props.history.push(
-                                                `/post/${postID}/edit`
-                                             );
-                                          }}
-                                       >
-                                          Edit
-                                       </DropdownItem>
-                                    )}
-                                    <DropdownItem>Report</DropdownItem>
-                                    {userNow.role === "admin" && (
-                                       <DropdownItem>Disable Post</DropdownItem>
-                                    )}
-                                 </DropdownMenu>
-                              </Dropdown>
-                           </Col>
+                           {config.headers.jwt && (
+                              <Col xs={2}>
+                                 <Dropdown
+                                    className="float-right"
+                                    size="sm"
+                                    isOpen={this.state.dropdownOpen}
+                                    toggle={this.toggleDropdown}
+                                 >
+                                    <StyledDropdown>
+                                       <FaChevronDown />
+                                    </StyledDropdown>
+                                    <DropdownMenu right>
+                                       {username === userNow.username && (
+                                          <DropdownItem
+                                             onClick={() => {
+                                                this.props.history.push(
+                                                   `/post/${postID}/edit`
+                                                );
+                                             }}
+                                          >
+                                             Edit
+                                          </DropdownItem>
+                                       )}
+                                       <DropdownItem onClick={() => this.setState({ modal: true })}>Report</DropdownItem>
+                                       {userNow.role === "admin" && (
+                                          <DropdownItem>
+                                             Disable Post
+                                          </DropdownItem>
+                                       )}
+                                    </DropdownMenu>
+                                 </Dropdown>
+                              </Col>
+                           )}
                         </Row>
                         <Row>
                            <Col>
@@ -566,25 +596,35 @@ class Post extends React.Component {
                         pageLength={pageLength}
                      />
 
-                     <Form onSubmit={this.mySubmitHandler}>
-                        <FormGroup>
-                           <Label for="comment" className="font-weight-bold">
-                              New Comment
-                           </Label>
-                           <StyledTextarea
-                              onChange={this.myChangeHandler}
-                              type="textarea"
-                              name="comment"
-                              id="comment"
-                           />
-                        </FormGroup>
-                        <br />
-                        <Row>
-                           <ButtonSubmit type="submit">Submit</ButtonSubmit>
-                        </Row>
-                     </Form>
+                     {config.headers.jwt && (
+                        <Form onSubmit={this.mySubmitHandler}>
+                           <FormGroup>
+                              <Label for="comment" className="font-weight-bold">
+                                 New Comment
+                              </Label>
+                              <StyledTextarea
+                                 onChange={this.myChangeHandler}
+                                 type="textarea"
+                                 name="comment"
+                                 id="comment"
+                                 value={this.state.comment} 
+                              />
+                           </FormGroup>
+                           <br />
+                           <Row>
+                              <ButtonSubmit type="submit">Submit</ButtonSubmit>
+                           </Row>
+                        </Form>
+                     )}
                   </Col>
                </Row>
+               {this.state.modal && (
+                  <ReportModal
+                     isOpen={true}
+                     nextFnc={this.submitReport}
+                     toggle={this.toggle}
+                  />
+               )}
             </Container>
          </Content>
       );

@@ -2,7 +2,7 @@ import React from "react";
 import API from "../module/api";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-import { NavbarBrand, Navbar, Nav, NavItem } from "reactstrap";
+import { NavbarBrand, Navbar, Nav, NavItem, Button } from "reactstrap";
 import {
    UncontrolledDropdown,
    DropdownToggle,
@@ -39,17 +39,27 @@ const StyledNavLink = styled(NavLink)`
 const StyledUncontrolledDropdown = styled(UncontrolledDropdown)`
    font-weight: bold;
    a {
-      color: #ffffff !important;
+      color: #ffffff;
    }
    a:hover {
       color: #b5c9d4 !important;
       text-decoration-line: none !important;
    }
 `;
+
 const StyledDropdownItem = styled(DropdownItem)`
    a {
       color: #73777a !important;
    }
+`;
+
+const BtnSignIn = styled(Button)`
+   background-color: #fd7e47 !important;
+   border: none !important;
+   font-size: 0.8rem !important;
+   font-weight: bold !important;
+   margin-right: 20px;
+   padding: 5px 10px !important;
 `;
 
 const config = {
@@ -91,38 +101,34 @@ class Navigation extends React.Component {
    }
 
    componentDidMount() {
-      Promise.all([getCategory(), getUsername()]).then(
-         values => {
+      Promise.all([getCategory(), getUsername()]).then(values => {
+         const props = {};
+
+         for (let i = 0; i < values.length; i++) {
+            const key = values[i] ? Object.keys(values[i])[0] : null;
+            const val = values[i] ? Object.values(values[i])[0] : null;
+            props[key] = val;
+         }
+
+         this.setState(props);
+      });
+   }
+
+   componentDidUpdate(prevProps, prevState) {
+      if (prevState.username !== this.state.username) {
+         Promise.all([getCategory(), getUsername()]).then(values => {
             const props = {};
 
             for (let i = 0; i < values.length; i++) {
                const key = values[i] ? Object.keys(values[i])[0] : null;
                const val = values[i] ? Object.values(values[i])[0] : null;
                props[key] = val;
-				}
-				
-				this.setState(props);
-         }
-      );
-	}
-	
-	componentDidUpdate(prevProps, prevState) {
-		if (prevState.username !== this.state.username) {
-			Promise.all([getCategory(), getUsername()]).then(
-				values => {
-					const props = {};
-	
-					for (let i = 0; i < values.length; i++) {
-						const key = values[i] ? Object.keys(values[i])[0] : null;
-						const val = values[i] ? Object.values(values[i])[0] : null;
-						props[key] = val;
-					}
-					
-					this.setState(props);
-				}
-			)
-		}
-	}
+            }
+
+            this.setState(props);
+         });
+      }
+   }
 
    render() {
       const { categories, username } = this.state;
@@ -156,20 +162,26 @@ class Navigation extends React.Component {
                   </StyledNavLink>
                </StyledNavItem>
             </Nav>
-            <Nav>
-               <StyledUncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret>
-                     {username}
-                  </DropdownToggle>
-                  <DropdownMenu right>
-                     <StyledDropdownItem href="/profile">
-                        Profile
-                     </StyledDropdownItem>
-                     <DropdownItem divider />
-                     <StyledDropdownItem>Log out</StyledDropdownItem>
-                  </DropdownMenu>
-               </StyledUncontrolledDropdown>
-            </Nav>
+
+            {config.headers.jwt ? (
+               <Nav>
+                  <StyledUncontrolledDropdown nav inNavbar>
+                     <DropdownToggle nav caret>
+                        {username}
+                     </DropdownToggle>
+                     <DropdownMenu right>
+                        <StyledDropdownItem href="/profile">
+                           Profile
+                        </StyledDropdownItem>
+                        <DropdownItem divider />
+                        <StyledDropdownItem>Log out</StyledDropdownItem>
+                     </DropdownMenu>
+                  </StyledUncontrolledDropdown>
+               </Nav>
+            ) : (
+               <BtnSignIn href="/signin">Sign In</BtnSignIn>
+            )}
+
          </StyledNavbar>
       );
    }

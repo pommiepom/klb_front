@@ -61,7 +61,7 @@ class NewPost extends React.Component {
       const props = {};
       const query = this.props.match.params;
 
-      query.limit = this.state.postsPerPage;
+      query.limit = postsPerPage;
       query.skip = 0;
 
       Promise.all([getPostsLength(query), getPosts(query)]).then(values => {
@@ -83,10 +83,9 @@ class NewPost extends React.Component {
    }
 
    componentDidUpdate(prevProps, prevState) {
-      // const currentPage = this.state.currentPage
       if (prevState.currentPage !== this.state.currentPage) {
          const { postsPerPage, currentPage } = this.state;
-         
+
          const props = {};
          const query = this.props.match.params;
 

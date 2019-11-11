@@ -72,16 +72,14 @@ class NewPost extends React.Component {
          API.post("/posts", data, config)
             .then(doc => {
                const postID = doc.data._id;
-               addFile(postID, files);
-
-               return postID;
+               addFile(postID, files)
+               .then(() => {
+                  this.props.history.push(`/post/${postID}`)
+               })
+               .catch(err => {
+                  console.error(err)
+               })
             })
-            .then(postID => {
-               this.props.history.push(`/post/${postID}`);
-            })
-            .catch(err => {
-               console.error(err);
-            });
       } else {
          console.error("can't upload over 5 files");
       }
