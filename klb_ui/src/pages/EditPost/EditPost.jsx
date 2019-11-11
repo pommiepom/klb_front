@@ -57,6 +57,19 @@ const getPost = postID => {
       });
 };
 
+const getFiles = postID => {
+   return API.get(`/posts/${postID}/files`, config)
+      .then(res => {
+         const files = res.data
+         console.log(files);
+         return { files };
+      })
+      .catch(err => {
+         console.error(err);
+         return err;
+      });
+};
+
 const getCategory = () => {
    return API.get(`/categories`)
       .then(res => {
@@ -80,8 +93,10 @@ class NewPost extends React.Component {
          file: "",
          categories: [],
          files: [],
-         modal: false
+         modal: false,
+         filesLength: 0
       };
+      this.myRef = React.createRef();
    }
 
    componentDidMount() {
@@ -89,20 +104,57 @@ class NewPost extends React.Component {
 
       Promise.all([getPost(postID), getCategory()]).then(values => {
          const props = {};
+         const filesLength =  Object.values(values[0])[0].fileID.length;
+
+         values[values.length] = { filesLength };
+
          for (let i = 0; i < values.length; i++) {
             const key = values[i] ? Object.keys(values[i])[0] : null;
             const val = values[i] ? Object.values(values[i])[0] : null;
             props[key] = val;
          }
          console.log(props);
+         
          this.setState({
             categories: props.categories,
             title: props.post.title,
             category: props.post.category,
             detail: props.post.detail,
-            files: props.post.fileID
+            files: props.post.fileID,
+            filesLength: props.filesLength
          });
       });
+      this.scrollToMyRef()
+   }
+
+   componentDidUpdate(prevProps, prevState) {
+      if (
+         prevState.filesLength !== this.state.filesLength &&
+         prevState.filesLength !== 0
+      ) {
+         console.log("update");
+         const postID = this.props.match.params.id;
+
+         Promise.all([getFiles(postID)]).then(values => {
+            const props = {};
+            console.log(values[0]);
+            for (let i = 0; i < values.length; i++) {
+               const key = values[i] ? Object.keys(values[i])[0] : null;
+               const val = values[i] ? Object.values(values[i])[0] : null;
+               props[key] = val;
+            }
+
+            if(!Array.isArray(props.files)){
+               props.files = [props.files]
+            }
+
+            this.setState({
+               files: props.files
+            });
+            // console.log("files", this.state.files);
+         });
+         this.scrollToMyRef()
+      }
    }
 
    mySubmitHandler = event => {
@@ -130,6 +182,23 @@ class NewPost extends React.Component {
       }
    };
 
+   submitFile = event => {
+      event.preventDefault();
+      const postID = this.props.match.params.id;
+		const files = $('#file').prop('files');
+
+      const uploadFilesNum = files.length
+      const { filesLength } = this.state
+
+      addFile(postID, files)
+      .then(() => {
+         this.setState({ filesLength: filesLength + uploadFilesNum, file: null })
+      })
+      .catch(err => {
+         console.error(err);
+      })
+   };
+
    myChangeHandler = event => {
       let name = event.target.name;
       let val = event.target.value;
@@ -153,27 +222,24 @@ class NewPost extends React.Component {
 
    delFile = fileID => {
       console.log("del");
-      const array = this.state.files;
-      const index = array.indexOf(fileID);
+      const { filesLength } = this.state
+      const postID = this.props.match.params.id;
 
-      if (index > -1) {
-         const postID = this.props.match.params.id;
-
-         API.delete(`/posts/${postID}/file/${fileID}`, config)
-            .then(doc => {
-               console.log(doc);
-               array.splice(index, 1);
-               this.setState({ files: array, modal: false });
-            })
-            .catch(err => {
-               console.log(err);
-            });
-      }
+      API.delete(`/posts/${postID}/file/${fileID}`, config)
+         .then(() => {
+            this.setState({ filesLength: filesLength - 1, modal: false });
+         })
+         .catch(err => {
+            console.log(err);
+         });
+      // }
    };
 
    toggle = () => {
       this.setState({ modal: !this.state.modal });
    };
+
+   scrollToMyRef = () => window.scrollTo(0, this.myRef.current.offsetTop);
 
    render() {
       const { categories, files } = this.state;
@@ -211,7 +277,7 @@ class NewPost extends React.Component {
       });
 
       return (
-         <Content>
+         <Content ref={this.myRef}>
             <Row>
                <Col xs={7} className="mx-auto my-0">
                   <Card>
@@ -223,7 +289,7 @@ class NewPost extends React.Component {
                            style={{ marginBottom: "30px", marginTop: "0px" }}
                         />
 
-                        <Form onSubmit={this.mySubmitHandler}>
+                        <Form>
                            <FormGroup>
                               <Label for="title">Title</Label>
                               <Input
@@ -269,8 +335,10 @@ class NewPost extends React.Component {
                                  value={this.state.detail}
                               />
                            </FormGroup>
+                        </Form>
 
-                           <FormGroup>
+                        <Form>
+                           <FormGroup style={{ display: "inline-block", paddingRight: "20px" }}>
                               <Label for="file">Attachment</Label>
                               <br />
                               <CustomInput
@@ -280,23 +348,24 @@ class NewPost extends React.Component {
                                  name="file"
                                  type="file"
                                  multiple="multiple"
-                                 className="w-50"
+                                 // className="w-50"
                                  bsSize="sm"
                               />
                            </FormGroup>
-                           {files && (
-                              <Container
-                                 style={{ marginTop: "10px", paddingLeft: 0 }}
-                              >
-                                 {renderFile}
-                              </Container>
-                           )}
-
-                           <br />
-                           <Row>
-                              <ButtonSubmit type="submit">Edit</ButtonSubmit>
-                           </Row>
+                           <ButtonSubmit onClick={this.submitFile} style={{ display: "inline-block" }}>Upload</ButtonSubmit>
                         </Form>
+
+                        {files && (
+                           <Container
+                              style={{ marginTop: "10px", paddingLeft: 0 }}
+                           >
+                              {renderFile}
+                           </Container>
+                        )}
+                           
+                        <Row style={{ paddingTop: "50px"}}>
+                           <ButtonSubmit onClick={this.mySubmitHandler}>Done</ButtonSubmit>
+                        </Row>
                      </CardBody>
                   </Card>
                </Col>

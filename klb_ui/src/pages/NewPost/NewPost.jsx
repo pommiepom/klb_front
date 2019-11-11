@@ -72,7 +72,7 @@ class NewPost extends React.Component {
          API.post("/posts", data, config)
             .then(doc => {
                const postID = doc.data._id;
-               addFile(postID);
+               addFile(postID, files);
 
                return postID;
             })
