@@ -1,24 +1,58 @@
 import React from "react";
+import API from "../module/api";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { Form, FormGroup, Label, Input, CustomInput } from "reactstrap";
+
+import ConfirmModal from "./ConfirmModal";
+
+const config = {
+   headers: {
+      jwt: localStorage.getItem("jwt")
+   }
+};
 
 class ReportModal extends React.Component {
    constructor(props) {
       super(props);
+      this.state = {
+			description: "",
+			modal: false
+      };
    }
 
+   changeHandler = event => {
+      let name = event.target.name;
+      let val = event.target.value;
+      this.setState({ [name]: val });
+   };
+
+   submitReport = () => {
+		console.log("submit");
+      const description = this.state.description;
+		const postID = this.props.postID;
+		
+
+      API.post(`/reports/${postID}`, { description }, config)
+         .then(() => {
+				this.props.toggle();
+				this.props.toggleAlert()
+         })
+         .catch(err => {
+            console.error(err);
+         });
+   };
+
    render() {
-      console.log("moooo");
-      console.log("props", this.props);
       return (
          <div>
+				<ConfirmModal/>
             <Modal
-               style={{
-                  position: "absolute",
-                  left: "50%",
-                  top: "50%",
-                  transform: "translate(-50%, -50%)"
-               }}
+               // style={{
+               // 	// position: "absolute",
+               // 	left: "50%",
+               // 	top: "50%",
+               // 	transform: "translate(-50%, -50%)"
+               // }}
                isOpen={this.props.isOpen}
             >
                <ModalHeader>Report Post</ModalHeader>
@@ -27,8 +61,8 @@ class ReportModal extends React.Component {
                      <FormGroup>
                         <Label for="description">Description</Label>
                         <Input
-                           // onChange={this.myChangeHandler}
-                           type="text"
+                           onChange={this.changeHandler}
+                           type="textarea"
                            name="description"
                            id="description"
                            bsSize="sm"
@@ -40,7 +74,7 @@ class ReportModal extends React.Component {
                <ModalFooter style={{ borderTop: "none" }}>
                   <Button
                      style={{ backgroundColor: "#fd7e47", border: "none" }}
-                     onClick={this.props.nextFnc}
+                     onClick={() => { this.setState({ modal: true }) }}
                   >
                      Done
                   </Button>
@@ -52,6 +86,17 @@ class ReportModal extends React.Component {
                   </Button>
                </ModalFooter>
             </Modal>
+
+				{this.state.modal && (
+               <ConfirmModal
+                  isOpen={this.state.modal}
+                  nextFnc={this.submitReport}
+                  toggle={this.toggle}
+                  header={`Report Post`}
+                  body={`Are you sure you want to report this post?`}
+                  yes={`Yes`}
+               />
+            )}
          </div>
       );
    }

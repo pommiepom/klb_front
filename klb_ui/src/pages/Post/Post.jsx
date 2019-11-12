@@ -4,7 +4,7 @@ import styled from "styled-components";
 import moment from "moment";
 import { FiHeart } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
-import { Badge } from "reactstrap";
+import { Badge, Alert } from "reactstrap";
 import { Container, Row, Col } from "reactstrap";
 import { Form, FormGroup, Label, Input, Button } from "reactstrap";
 import {
@@ -205,7 +205,8 @@ class Post extends React.Component {
          pageLength: 1,
          pageRangeDisplayed: 5,
          dropdownOpen: false,
-         modal: false
+         modal: false,
+         alert: false
       };
       this.myRef = React.createRef();
    }
@@ -254,7 +255,6 @@ class Post extends React.Component {
          prevState.commentsLength !== this.state.commentsLength ||
          prevState.currentPage !== this.state.currentPage
       ) {
-
          const { currentPage, postID, commentsPerPage } = this.state;
 
          Promise.all([
@@ -284,9 +284,7 @@ class Post extends React.Component {
             this.setState(props);
          });
 
-         if (
-            (prevState.currentPage !== this.state.currentPage)
-         ) {
+         if (prevState.currentPage !== this.state.currentPage) {
             this.scrollToMyRef();
          } else {
             window.scrollTo(0, 0);
@@ -294,13 +292,13 @@ class Post extends React.Component {
       }
    }
 
-   myChangeHandler = event => {
+   changeHandler = event => {
       let name = event.target.name;
       let val = event.target.value;
       this.setState({ [name]: val });
    };
 
-   mySubmitHandler = event => {
+   commentHandler = event => {
       event.preventDefault();
 
       const { comment, postID } = this.state;
@@ -363,24 +361,12 @@ class Post extends React.Component {
       }
    };
 
-   // reportHandler = () => {
-   //    console.log("in");
-   //    // console.log("ID", fileID);
-   //    return (
-   //       <ReportModal
-   //          isOpen={true}
-   //          nextFnc={this.submitReport}
-   //          toggle={this.toggle}
-   //       />
-   //    );
-   // };
-
-   submitReport = () => {
-      
-   }
-
    toggleDropdown = () => {
       this.setState({ dropdownOpen: !this.state.dropdownOpen });
+   };
+
+   toggleAlert = () => {
+      this.setState({ alert: !this.state.alert });
    };
 
    toggle = () => {
@@ -443,6 +429,9 @@ class Post extends React.Component {
 
       return (
          <Content>
+            {this.state.alert && (
+               <Alert color="warning">This post was reported!</Alert>
+            )}
             <Container fluid>
                <Row>
                   <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
@@ -474,7 +463,13 @@ class Post extends React.Component {
                                              Edit
                                           </DropdownItem>
                                        )}
-                                       <DropdownItem onClick={() => this.setState({ modal: true })}>Report</DropdownItem>
+                                       <DropdownItem
+                                          onClick={() =>
+                                             this.setState({ modal: true })
+                                          }
+                                       >
+                                          Report
+                                       </DropdownItem>
                                        {userNow.role === "admin" && (
                                           <DropdownItem>
                                              Disable Post
@@ -597,17 +592,17 @@ class Post extends React.Component {
                      />
 
                      {config.headers.jwt && (
-                        <Form onSubmit={this.mySubmitHandler}>
+                        <Form onSubmit={this.commentHandler}>
                            <FormGroup>
                               <Label for="comment" className="font-weight-bold">
                                  New Comment
                               </Label>
                               <StyledTextarea
-                                 onChange={this.myChangeHandler}
+                                 onChange={this.changeHandler}
                                  type="textarea"
                                  name="comment"
                                  id="comment"
-                                 value={this.state.comment} 
+                                 value={this.state.comment}
                               />
                            </FormGroup>
                            <br />
@@ -623,6 +618,8 @@ class Post extends React.Component {
                      isOpen={true}
                      nextFnc={this.submitReport}
                      toggle={this.toggle}
+                     postID={postID}
+                     toggleAlert={this.toggleAlert}
                   />
                )}
             </Container>
