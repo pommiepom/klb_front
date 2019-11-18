@@ -7,6 +7,7 @@ import EditPost from "../pages/EditPost/EditPost.jsx";
 import Search from "../pages/Search/Search.jsx";
 import SearchResult from "../pages/SearchResult/SearchResult.jsx";
 import NewPost from "../pages/NewPost/NewPost.jsx";
+import ReportedPost from "../pages/ReportedPost/ReportedPost.jsx";
 import Profile from "../pages/Profile/Profile.jsx";
 
 class Router extends React.Component {
@@ -17,6 +18,7 @@ class Router extends React.Component {
             <Route path="/profile" component={Profile}></Route>
             <Route path="/page/:currentPage" component={Home}></Route>
             <Route path="/newpost" component={NewPost}></Route>
+            <Route path="/report" component={ReportedPost}></Route>
             <Route exact path="/search" component={Search}></Route>
             <Route
                path="/search/title=:title?&category=:category?&fromUser=:fromUser?&fromDate=:fromDate?&toDate=:toDate?"

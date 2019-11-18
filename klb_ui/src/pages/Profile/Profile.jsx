@@ -3,7 +3,6 @@ import styled from "styled-components";
 import API from "../../module/api";
 import { Row, Col } from "reactstrap";
 import { Card, CardBody } from "reactstrap";
-import { Form, FormGroup, Label, Input, Button } from "reactstrap";
 
 const Content = styled.div`
    background-color: #f9f9f9;
@@ -15,21 +14,8 @@ const Headline = styled.h2`
    font-weight: bold;
 `;
 
-const StyledLable = styled(Label)`
-   font-size: 0.8em !important;
-`;
-
 const StyledText = styled.p`
    // font-size: 0.8em !important;
-`;
-
-const ButtonSubmit = styled(Button)`
-   background-color: #fd7e47 !important;
-   border: none !important;
-   font-weight: bold !important;
-   // align-self: center;
-   margin-left: auto;
-   margin-right: auto;
 `;
 
 const config = {
@@ -75,60 +61,60 @@ class Search extends React.Component {
 
                         
                            <Row>
-                              <Col sm={2}>
+                              <Col sm={3}>
                                  <StyledText>
                                     Username:
                                  </StyledText>
                               </Col>
-                              <Col sm={10}>
+                              <Col sm={9}>
                                  <StyledText>
                                     {user.username}
                                  </StyledText>
                               </Col>
                            </Row>
                            <Row>
-                              <Col sm={2}>
+                              <Col sm={3}>
                                  <StyledText>
                                     Firstname:
                                  </StyledText>
                               </Col>
-                              <Col sm={10}>
+                              <Col sm={9}>
                                  <StyledText>
                                     {user.firstname}
                                  </StyledText>
                               </Col>
                            </Row>
                            <Row>
-                              <Col sm={2}>
+                              <Col sm={3}>
                                  <StyledText>
                                     Lastname:
                                  </StyledText>
                               </Col>
-                              <Col sm={10}>
+                              <Col sm={9}>
                                  <StyledText>
                                     {user.lastname}
                                  </StyledText>
                               </Col>
                            </Row>
                            <Row>
-                              <Col sm={2}>
+                              <Col sm={3}>
                                  <StyledText>
                                     E-mail:
                                  </StyledText>
                               </Col>
-                              <Col sm={10}>
+                              <Col sm={9}>
                                  <StyledText>
                                     {user.email}
                                  </StyledText>
                               </Col>
                            </Row>
                            <Row>
-                              <Col sm={2}>
+                              <Col sm={3}>
                                  <StyledText>
                                     Role:
                                  </StyledText>
                               </Col>
-                              <Col sm={10}>
+                              <Col sm={9}>
                                  <StyledText>
                                     {user.role}
                                  </StyledText>

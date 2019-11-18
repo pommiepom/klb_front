@@ -9,7 +9,7 @@ import {
    DropdownMenu,
    DropdownItem
 } from "reactstrap";
-import { FaChevronDown } from "react-icons/fa";
+// import { FaChevronDown } from "react-icons/fa";
 
 const Logo = styled(NavbarBrand)`
    margin: auto 20px !important;
@@ -27,6 +27,7 @@ const StyledNavbar = styled(Navbar)`
 const StyledNavItem = styled(NavItem)`
    padding: 0.5rem 1rem;
 `;
+
 const StyledNavLink = styled(NavLink)`
    color: #ffffff !important;
    font-weight: bold;
@@ -36,21 +37,16 @@ const StyledNavLink = styled(NavLink)`
    }
 `;
 
-const StyledUncontrolledDropdown = styled(UncontrolledDropdown)`
+const StyledDropdownToggle = styled(DropdownToggle)`
+   color: #ffffff;
    font-weight: bold;
-   a {
-      color: #ffffff;
-   }
-   a:hover {
-      color: #b5c9d4 !important;
-      text-decoration-line: none !important;
+   :hover {
+      color: #b5c9d4;
    }
 `;
 
 const StyledDropdownItem = styled(DropdownItem)`
-   a {
-      color: #73777a !important;
-   }
+   color: #73777a !important;
 `;
 
 const BtnSignIn = styled(Button)`
@@ -80,14 +76,27 @@ const getCategory = () => {
       });
 };
 
-const getUsername = () => {
+const getUserNow = () => {
+   if (!config.headers.jwt) {
+      // config = null
+      delete config.headers.jwt;
+      // console.log("moo");
+   }
+   console.log("config", config);
+
    return API.get(`/users/signedIn`, config)
       .then(res => {
-         const username = res.data[0].username;
+         const userNow = {};
 
-         return { username };
+         if (res) {
+            userNow.username = res.data[0].username;
+            userNow.role = res.data[0].role;
+         }
+
+         return { userNow };
       })
       .catch(err => {
+         console.log(err.message);
          console.error(err);
       });
 };
@@ -96,48 +105,76 @@ class Navigation extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
+         userNow: "",
          categories: []
       };
    }
 
    componentDidMount() {
-      Promise.all([getCategory(), getUsername()]).then(values => {
+      Promise.all([getCategory(), getUserNow()]).then(values => {
          const props = {};
-
          for (let i = 0; i < values.length; i++) {
             const key = values[i] ? Object.keys(values[i])[0] : null;
             const val = values[i] ? Object.values(values[i])[0] : null;
             props[key] = val;
          }
-
+         console.log("props", props);
          this.setState(props);
       });
    }
 
-   componentDidUpdate(prevProps, prevState) {
-      if (prevState.username !== this.state.username) {
-         Promise.all([getCategory(), getUsername()]).then(values => {
-            const props = {};
+   // componentDidUpdate(prevProps, prevState) {
+   //    console.log("prevState.userNow", prevState.userNow);
+   //    console.log("this.state.userNow", this.state.userNow);
+   //    if (prevState.userNow !== this.state.userNow) {
+   //       Promise.all([getCategory(), getUserNow()]).then(values => {
+   //          const props = {};
 
-            for (let i = 0; i < values.length; i++) {
-               const key = values[i] ? Object.keys(values[i])[0] : null;
-               const val = values[i] ? Object.values(values[i])[0] : null;
-               props[key] = val;
-            }
+   //          for (let i = 0; i < values.length; i++) {
+   //             const key = values[i] ? Object.keys(values[i])[0] : null;
+   //             const val = values[i] ? Object.values(values[i])[0] : null;
+   //             props[key] = val;
+   //          }
+   //          this.setState(props);
+   //       });
+   //    }
+   // }
 
-            this.setState(props);
-         });
-      }
-   }
+   signOut = () => {
+      var delJwt = new Promise((resolve, reject) => {
+         resolve(localStorage.clear());
+      });
+
+      delJwt
+         .then(() => {
+            console.log("del");
+            config.headers.jwt = localStorage.getItem("jwt");
+         })
+         .then(
+            getCategory().then(values => {
+               const props = {};
+               for (let i = 0; i < values.length; i++) {
+                  const key = values[i] ? Object.keys(values[i])[0] : null;
+                  const val = values[i] ? Object.values(values[i])[0] : null;
+                  props[key] = val;
+               }
+               console.log("props", props);
+               this.setState(props);
+            })
+         );
+   };
 
    render() {
-      const { categories, username } = this.state;
+      const { categories, userNow } = this.state;
 
       const renderCategory = categories.map((category, index) => {
          return (
-            <DropdownItem key={index} value={category.name}>
+            <StyledDropdownItem
+               key={index}
+               href={`/search/title=&category=${category.name}&fromUser=&fromDate=&toDate=`}
+            >
                {category.name}
-            </DropdownItem>
+            </StyledDropdownItem>
          );
       });
 
@@ -150,38 +187,50 @@ class Navigation extends React.Component {
                      Home
                   </StyledNavLink>
                </StyledNavItem>
-               <StyledUncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret>
+               <UncontrolledDropdown nav inNavbar>
+                  <StyledDropdownToggle nav caret>
                      Category
-                  </DropdownToggle>
+                  </StyledDropdownToggle>
                   <DropdownMenu right>{renderCategory}</DropdownMenu>
-               </StyledUncontrolledDropdown>
+               </UncontrolledDropdown>
                <StyledNavItem>
                   <StyledNavLink exact activeClassName="current" to="/search">
                      Search
                   </StyledNavLink>
                </StyledNavItem>
+               {userNow.role === "admin" && (
+                  <StyledNavItem>
+                     <StyledNavLink
+                        exact
+                        activeClassName="current"
+                        to="/report"
+                     >
+                        Reported Post
+                     </StyledNavLink>
+                  </StyledNavItem>
+               )}
             </Nav>
 
             {config.headers.jwt ? (
                <Nav>
-                  <StyledUncontrolledDropdown nav inNavbar>
-                     <DropdownToggle nav caret>
-                        {username}
-                     </DropdownToggle>
+                  <UncontrolledDropdown nav inNavbar>
+                     <StyledDropdownToggle nav caret>
+                        {userNow.username}
+                     </StyledDropdownToggle>
                      <DropdownMenu right>
                         <StyledDropdownItem href="/profile">
                            Profile
                         </StyledDropdownItem>
                         <DropdownItem divider />
-                        <StyledDropdownItem>Log out</StyledDropdownItem>
+                        <StyledDropdownItem onClick={this.signOut}>
+                           Sign out
+                        </StyledDropdownItem>
                      </DropdownMenu>
-                  </StyledUncontrolledDropdown>
+                  </UncontrolledDropdown>
                </Nav>
             ) : (
                <BtnSignIn href="/signin">Sign In</BtnSignIn>
             )}
-
          </StyledNavbar>
       );
    }

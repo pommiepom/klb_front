@@ -47,12 +47,6 @@ class ReportModal extends React.Component {
          <div>
 				<ConfirmModal/>
             <Modal
-               // style={{
-               // 	// position: "absolute",
-               // 	left: "50%",
-               // 	top: "50%",
-               // 	transform: "translate(-50%, -50%)"
-               // }}
                isOpen={this.props.isOpen}
             >
                <ModalHeader>Report Post</ModalHeader>
@@ -80,7 +74,7 @@ class ReportModal extends React.Component {
                   </Button>
                   <Button
                      style={{ backgroundColor: "#73777a", border: "none" }}
-                     onClick={() => this.props.toggle()}
+                     onClick={this.props.toggle}
                   >
                      Cancel
                   </Button>
@@ -91,7 +85,7 @@ class ReportModal extends React.Component {
                <ConfirmModal
                   isOpen={this.state.modal}
                   nextFnc={this.submitReport}
-                  toggle={this.toggle}
+                  toggle={() => this.setState({ modal: false })}
                   header={`Report Post`}
                   body={`Are you sure you want to report this post?`}
                   yes={`Yes`}

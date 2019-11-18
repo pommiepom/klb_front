@@ -1,14 +1,15 @@
 import React from "react";
 import API from "../../module/api";
 import styled from "styled-components";
-import { Button, Container, Row, Col } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 
 import PostComponent from "../../components/Post.jsx";
 import PaginationComp from "../../components/Pagination.jsx";
 
 const Content = styled.div`
    background-color: #f9f9f9;
-   padding: 75px;
+	padding-bottom: 75px;
+	padding-top: 75px;
    color: #73777a;
 `;
 
@@ -83,7 +84,10 @@ class NewPost extends React.Component {
    }
 
    componentDidUpdate(prevProps, prevState) {
-      if (prevState.currentPage !== this.state.currentPage) {
+      if (
+         prevState.currentPage !== this.state.currentPage ||
+         prevProps.match.params !== this.props.match.params
+      ) {
          const { postsPerPage, currentPage } = this.state;
 
          const props = {};
@@ -116,7 +120,7 @@ class NewPost extends React.Component {
          this.setState({ currentPage });
       }
    };
-   
+
    routeNewPost = () => {
       const path = `/newpost`;
       this.props.history.push(path);

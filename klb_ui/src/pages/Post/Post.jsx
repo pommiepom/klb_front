@@ -19,6 +19,7 @@ import File from "../../components/File.jsx";
 import Comment from "../../components/Comment.jsx";
 import PaginationComp from "../../components/Pagination.jsx";
 import ReportModal from "../../components/ReportModal";
+import ConfirmModal from "../../components/ConfirmModal";
 
 const Content = styled.div`
    background-color: #f9f9f9;
@@ -31,18 +32,22 @@ const StyledPost = styled.div`
    background-color: #ffffff;
    border: 1px solid #b8b8b8;
    padding: 15px 35px;
-   color: 73777a;
+   color: #73777a;
 `;
 
 const Title = styled.p`
    font-weight: bold;
    margin-bottom: 0;
 `;
+
 const StyledDropdown = styled(DropdownToggle)`
    background-color: #fd7e47 !important;
    border: none !important;
    font-weight: bold !important;
    font-size: 0.7em !important;
+   :hover {
+      background-color: #f5692c !important;
+   }
    // border-radius: 25px !important;
    // padding-left: 15px !important;
    // padding-right: 15px !important;
@@ -88,6 +93,9 @@ const ButtonSubmit = styled(Button)`
    font-weight: bold !important;
    margin-left: auto;
    margin-right: auto;
+   :hover {
+      background-color: #f5692c !important;
+   }
 `;
 
 const StyledTextarea = styled(Input)`
@@ -96,6 +104,10 @@ const StyledTextarea = styled(Input)`
    :focus {
       border-color: #495057 !important;
    }
+`;
+
+const StyledDropdownItem = styled(DropdownItem)`
+   color: #73777a !important;
 `;
 
 const config = {
@@ -205,7 +217,8 @@ class Post extends React.Component {
          pageLength: 1,
          pageRangeDisplayed: 5,
          dropdownOpen: false,
-         modal: false,
+         modalReport: false,
+         modalDisable: false,
          alert: false
       };
       this.myRef = React.createRef();
@@ -355,6 +368,19 @@ class Post extends React.Component {
       }
    };
 
+   disablePost = postID => {
+      console.log("disble");
+      console.log("postID", postID);
+
+      API.delete(`/posts/${postID}`, config)
+         .then(() => {
+            this.props.history.push(`/`);
+         })
+         .catch(err => {
+            console.error(err);
+         });
+   };
+
    changePage = currentPage => {
       if (currentPage !== this.state.currentPage) {
          this.setState({ currentPage });
@@ -365,18 +391,10 @@ class Post extends React.Component {
       this.setState({ dropdownOpen: !this.state.dropdownOpen });
    };
 
-   toggleAlert = () => {
-      this.setState({ alert: !this.state.alert });
-   };
-
-   toggle = () => {
-      this.setState({ modal: !this.state.modal });
-   };
-
    scrollToMyRef = () => window.scrollTo(0, this.myRef.current.offsetTop);
 
    render() {
-      const disableButtom = { leftButton: false, rightButton: false };
+      const disableButton = { leftButton: false, rightButton: false };
       const { postID, post, comments, files, username } = this.state;
       const { userNow, liked, likeNum } = this.state;
       const {
@@ -423,8 +441,8 @@ class Post extends React.Component {
          pageNumbers.push(i);
       }
 
-      disableButtom.leftButton = currentPage === 1 ? true : false;
-      disableButtom.rightButton =
+      disableButton.leftButton = currentPage === 1 ? true : false;
+      disableButton.rightButton =
          (currentPage === pageLength) | (commentsLength === 0) ? true : false;
 
       return (
@@ -453,7 +471,7 @@ class Post extends React.Component {
                                     </StyledDropdown>
                                     <DropdownMenu right>
                                        {username === userNow.username && (
-                                          <DropdownItem
+                                          <StyledDropdownItem
                                              onClick={() => {
                                                 this.props.history.push(
                                                    `/post/${postID}/edit`
@@ -461,19 +479,27 @@ class Post extends React.Component {
                                              }}
                                           >
                                              Edit
-                                          </DropdownItem>
+                                          </StyledDropdownItem>
                                        )}
-                                       <DropdownItem
+                                       <StyledDropdownItem
                                           onClick={() =>
-                                             this.setState({ modal: true })
+                                             this.setState({
+                                                modalReport: true
+                                             })
                                           }
                                        >
                                           Report
-                                       </DropdownItem>
+                                       </StyledDropdownItem>
                                        {userNow.role === "admin" && (
-                                          <DropdownItem>
+                                          <StyledDropdownItem
+                                             onClick={() =>
+                                                this.setState({
+                                                   modalDisable: true
+                                                })
+                                             }
+                                          >
                                              Disable Post
-                                          </DropdownItem>
+                                          </StyledDropdownItem>
                                        )}
                                     </DropdownMenu>
                                  </Dropdown>
@@ -587,7 +613,7 @@ class Post extends React.Component {
                         changePage={this.changePage}
                         currentPage={currentPage}
                         pageNumbers={pageNumbers}
-                        disableButtom={disableButtom}
+                        disableButtom={disableButton}
                         pageLength={pageLength}
                      />
 
@@ -613,13 +639,25 @@ class Post extends React.Component {
                      )}
                   </Col>
                </Row>
-               {this.state.modal && (
+
+               {this.state.modalReport && (
                   <ReportModal
                      isOpen={true}
                      nextFnc={this.submitReport}
-                     toggle={this.toggle}
+                     toggle={() => this.setState({ modalReport: false })}
                      postID={postID}
-                     toggleAlert={this.toggleAlert}
+                     toggleAlert={() => this.setState({ alert: true })}
+                  />
+               )}
+
+               {this.state.modalDisable && (
+                  <ConfirmModal
+                     isOpen={true}
+                     nextFnc={() => this.disablePost(postID)}
+                     toggle={() => this.setState({ modalDisable: false })}
+                     header={`Disable Post`}
+                     body={`Are you sure you want to disable this post?`}
+                     yes={`Disable`}
                   />
                )}
             </Container>

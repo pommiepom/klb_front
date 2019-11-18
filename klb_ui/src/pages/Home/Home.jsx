@@ -157,7 +157,7 @@ class NewPost extends React.Component {
 	scrollToMyRef = () => window.scrollTo(0, this.myRef.current.offsetTop);
 
 	render() {
-		const disableButtom = { leftButton: false, rightButton: false };
+		const disableButton = { leftButton: false, rightButton: false };
 		const {
 			posts,
 			currentPage,
@@ -187,8 +187,8 @@ class NewPost extends React.Component {
 			pageNumbers.push(i);
 		}
 
-		disableButtom.leftButton = currentPage === 1 ? true : false;
-		disableButtom.rightButton =
+		disableButton.leftButton = currentPage === 1 ? true : false;
+		disableButton.rightButton =
 			(currentPage === pageLength) | (postsLength === 0) ? true : false;
 		return (
 			<Content ref={this.myRef}>
@@ -221,7 +221,7 @@ class NewPost extends React.Component {
 								changePage={this.changePage}
 								currentPage={currentPage}
 								pageNumbers={pageNumbers}
-								disableButtom={disableButtom}
+								disableButtom={disableButton}
 								pageLength={pageLength}
 							/>
 						</Col>

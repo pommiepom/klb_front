@@ -345,7 +345,7 @@ class NewPost extends React.Component {
                <ConfirmModal
                   isOpen={this.state.modal}
                   nextFnc={() => this.delFile(this.state.fileID)}
-                  toggle={this.toggle}
+                  toggle={() => this.setState({ modal: false })}
                   header={`Delete File`}
                   body={`Are you sure you want to delete this file?`}
                   yes={`Delete`}

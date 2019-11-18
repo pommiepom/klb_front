@@ -44,6 +44,9 @@ const addFile = (post_id) => {
 					reject(err)
 				})
 		}
+		else{
+			resolve('no file')
+		}
 	})
 }
 
