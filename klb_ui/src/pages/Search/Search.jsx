@@ -19,13 +19,15 @@ const StyledLable = styled(Label)`
    font-size: 0.8em !important;
 `;
 
-const ButtonSubmit = styled(Button)`
+const StyledButton = styled(Button)`
    background-color: #fd7e47 !important;
    border: none !important;
    font-weight: bold !important;
-   // align-self: center;
    margin-left: auto;
    margin-right: auto;
+   :hover {
+      background-color: #f5692c !important;
+   }
 `;
 
 class Search extends React.Component {
@@ -98,7 +100,7 @@ class Search extends React.Component {
       return (
          <Content>
             <Row>
-               <Col xs={7} className="mx-auto my-0">
+               <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
                   <Card>
                      <CardBody
                         style={{ paddingLeft: "50px", paddingRight: "50px" }}
@@ -110,10 +112,10 @@ class Search extends React.Component {
 
                         <Form onSubmit={this.mySubmitHandler}>
                            <FormGroup row>
-                              <StyledLable for="title" sm={2} className="pr-0">
+                              <StyledLable for="title" lg={2} className="pr-0">
                                  Title:
                               </StyledLable>
-                              <Col sm={10}>
+                              <Col xs={12} lg={10}>
                                  <Input
                                     onChange={this.myChangeHandler}
                                     type="text"
@@ -128,19 +130,19 @@ class Search extends React.Component {
                            <FormGroup row>
                               <StyledLable
                                  for="category"
-                                 sm={2}
+                                 lg={2}
                                  className="pr-0"
                               >
                                  Category:
                               </StyledLable>
-                              <Col sm={10}>
+                              <Col xs={12} lg={6}>
                                  <Input
                                     onChange={this.myChangeHandler}
                                     type="select"
                                     name="category"
                                     id="category"
                                     bsSize="sm"
-                                    className="w-50"
+                                    // className="w-50"
                                     style={{
                                        borderRadius: "7px",
                                        color: "#73777A"
@@ -155,19 +157,19 @@ class Search extends React.Component {
                            <FormGroup row>
                               <StyledLable
                                  for="fromUser"
-                                 sm={2}
+                                 lg={2}
                                  className="pr-0"
                               >
                                  From user:
                               </StyledLable>
-                              <Col sm={10}>
+                              <Col xs={12} lg={6}>
                                  <Input
                                     onChange={this.myChangeHandler}
                                     type="text"
                                     name="fromUser"
                                     id="fromUser"
                                     bsSize="sm"
-                                    className="w-50"
+                                    // className="w-50"
                                     style={{ borderRadius: "7px" }}
                                  />
                               </Col>
@@ -176,12 +178,13 @@ class Search extends React.Component {
                            <FormGroup row>
                               <StyledLable
                                  for="fromDate"
-                                 sm={2}
+                                 lg={2}
+                                 xs={12}
                                  className="pr-0"
                               >
                                  From this date:
                               </StyledLable>
-                              <Col className="pr-0">
+                              <Col xs={7} lg={4}>
                                  <Input
                                     onChange={this.myChangeHandler}
                                     type="date"
@@ -194,12 +197,13 @@ class Search extends React.Component {
 
                               <StyledLable
                                  for="toDate"
-                                 sm={2}
-                                 className="text-right"
+                                 lg={2}
+                                 xs={12}
+                                 // className="text-right"
                               >
                                  To this date:
                               </StyledLable>
-                              <Col className="pl-0">
+                              <Col xs={7} lg={4}>
                                  <Input
                                     onChange={this.myChangeHandler}
                                     type="date"
@@ -213,12 +217,12 @@ class Search extends React.Component {
 
                            <br />
                            <Row>
-                              <ButtonSubmit
+                              <StyledButton
                                  type="button"
                                  onClick={this.goToResult}
                               >
-                                 Submit
-                              </ButtonSubmit>
+                                 Search
+                              </StyledButton>
                            </Row>
                         </Form>
                      </CardBody>

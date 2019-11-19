@@ -19,9 +19,9 @@ const StyledText = styled.p`
 `;
 
 const config = {
-	headers: {
-		jwt: localStorage.getItem("jwt")
-	}
+   headers: {
+      jwt: localStorage.getItem("jwt")
+   }
 };
 
 class Search extends React.Component {
@@ -49,7 +49,7 @@ class Search extends React.Component {
       return (
          <Content>
             <Row>
-               <Col xs={7} className="mx-auto my-0">
+               <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
                   <Card>
                      <CardBody
                         style={{ paddingLeft: "50px", paddingRight: "50px" }}
@@ -59,70 +59,73 @@ class Search extends React.Component {
                            style={{ marginBottom: "30px", marginTop: "0px" }}
                         />
 
-                        
-                           <Row>
-                              <Col sm={3}>
-                                 <StyledText>
-                                    Username:
-                                 </StyledText>
-                              </Col>
-                              <Col sm={9}>
-                                 <StyledText>
-                                    {user.username}
-                                 </StyledText>
-                              </Col>
-                           </Row>
-                           <Row>
-                              <Col sm={3}>
-                                 <StyledText>
-                                    Firstname:
-                                 </StyledText>
-                              </Col>
-                              <Col sm={9}>
-                                 <StyledText>
-                                    {user.firstname}
-                                 </StyledText>
-                              </Col>
-                           </Row>
-                           <Row>
-                              <Col sm={3}>
-                                 <StyledText>
-                                    Lastname:
-                                 </StyledText>
-                              </Col>
-                              <Col sm={9}>
-                                 <StyledText>
-                                    {user.lastname}
-                                 </StyledText>
-                              </Col>
-                           </Row>
-                           <Row>
-                              <Col sm={3}>
-                                 <StyledText>
-                                    E-mail:
-                                 </StyledText>
-                              </Col>
-                              <Col sm={9}>
-                                 <StyledText>
-                                    {user.email}
-                                 </StyledText>
-                              </Col>
-                           </Row>
-                           <Row>
-                              <Col sm={3}>
-                                 <StyledText>
-                                    Role:
-                                 </StyledText>
-                              </Col>
-                              <Col sm={9}>
-                                 <StyledText>
-                                    {user.role}
-                                 </StyledText>
-                              </Col>
-                           </Row>
+                        <Row>
+                           <Col
+                              xs={12}
+                              md={5}
+                              lg={4}
+                              className="font-weight-bold"
+                           >
+                              <StyledText>Username:</StyledText>
+                           </Col>
+                           <Col xs={12} md={7} lg={8}>
+                              <StyledText>{user.username}</StyledText>
+                           </Col>
+                        </Row>
+                        <Row>
+                           <Col
+                              xs={12}
+                              md={5}
+                              lg={4}
+                              className="font-weight-bold"
+                           >
+                              <StyledText>Firstname:</StyledText>
+                           </Col>
+                           <Col xs={12} md={7} lg={8}>
+                              <StyledText>{user.firstname}</StyledText>
+                           </Col>
+                        </Row>
+                        <Row>
+                           <Col
+                              xs={12}
+                              md={5}
+                              lg={4}
+                              className="font-weight-bold"
+                           >
+                              <StyledText>Lastname:</StyledText>
+                           </Col>
+                           <Col xs={12} md={7} lg={8}>
+                              <StyledText>{user.lastname}</StyledText>
+                           </Col>
+                        </Row>
+                        <Row>
+                           <Col
+                              xs={12}
+                              md={5}
+                              lg={4}
+                              className="font-weight-bold"
+                           >
+                              <StyledText>E-mail:</StyledText>
+                           </Col>
+                           <Col xs={12} md={7} lg={8}>
+                              <StyledText>{user.email}</StyledText>
+                           </Col>
+                        </Row>
+                        <Row>
+                           <Col
+                              xs={12}
+                              md={5}
+                              lg={4}
+                              className="font-weight-bold"
+                           >
+                              <StyledText>Role:</StyledText>
+                           </Col>
+                           <Col xs={12} md={7} lg={8}>
+                              <StyledText>{user.role}</StyledText>
+                           </Col>
+                        </Row>
 
-                           <br />
-      
+                        <br />
                      </CardBody>
                   </Card>
                </Col>

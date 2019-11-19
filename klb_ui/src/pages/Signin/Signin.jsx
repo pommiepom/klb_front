@@ -16,6 +16,9 @@ const ButtonSubmit = styled(Button)`
    font-weight: bold !important;
    background-color: #fd7e47 !important;
    border: none !important;
+   :hover {
+      background-color: #f5692c !important;
+   }
 `;
 
 class Signin extends React.Component {

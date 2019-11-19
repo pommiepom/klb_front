@@ -24,6 +24,9 @@ const ButtonNewPost = styled(Button)`
 	border-radius: 25px !important;
 	padding-left: 15px !important;
 	padding-right: 15px !important;
+	:hover {
+      background-color: #f5692c !important;
+   }
 `;
 
 const config = {

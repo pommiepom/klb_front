@@ -20,13 +20,15 @@ const Headline = styled.h2`
    font-weight: bold;
 `;
 
-const ButtonSubmit = styled(Button)`
+const StyledButton = styled(Button)`
    background-color: #fd7e47 !important;
    border: none !important;
    font-weight: bold !important;
-   // align-self: center;
    margin-left: auto;
    margin-right: auto;
+   :hover {
+      background-color: #f5692c !important;
+   }
 `;
 
 const ButtonDelete = styled(Button)`
@@ -35,7 +37,10 @@ const ButtonDelete = styled(Button)`
 	margin-left: auto;
 	margin-right: auto;
 	font-size: 0.70em !important
-	border: none !important;
+   border: none !important;
+   :hover {
+      background-color: #5d6163 !important;
+   }
 `;
 
 const config = {
@@ -322,7 +327,7 @@ class NewPost extends React.Component {
                                  bsSize="sm"
                               />
                            </FormGroup>
-                           <ButtonSubmit onClick={this.submitFile} style={{ display: "inline-block" }}>Upload</ButtonSubmit>
+                           <StyledButton onClick={this.submitFile} style={{ display: "inline-block" }}>Upload</StyledButton>
                         </Form>
 
                         {files && (
@@ -334,7 +339,7 @@ class NewPost extends React.Component {
                         )}
                            
                         <Row style={{ paddingTop: "50px"}}>
-                           <ButtonSubmit onClick={this.mySubmitHandler}>Done</ButtonSubmit>
+                           <StyledButton onClick={this.mySubmitHandler}>Done</StyledButton>
                         </Row>
                      </CardBody>
                   </Card>

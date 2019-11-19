@@ -56,6 +56,9 @@ const BtnSignIn = styled(Button)`
    font-weight: bold !important;
    margin-right: 20px;
    padding: 5px 10px !important;
+   :hover {
+      background-color: #f5692c !important;
+   }
 `;
 
 const config = {
@@ -78,11 +81,8 @@ const getCategory = () => {
 
 const getUserNow = () => {
    if (!config.headers.jwt) {
-      // config = null
       delete config.headers.jwt;
-      // console.log("moo");
    }
-   console.log("config", config);
 
    return API.get(`/users/signedIn`, config)
       .then(res => {
@@ -118,7 +118,6 @@ class Navigation extends React.Component {
             const val = values[i] ? Object.values(values[i])[0] : null;
             props[key] = val;
          }
-         console.log("props", props);
          this.setState(props);
       });
    }

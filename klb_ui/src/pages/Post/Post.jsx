@@ -210,6 +210,7 @@ class Post extends React.Component {
          likeNum: "",
          files: [],
          comments: [],
+         comment: "",
          liked: false,
          commentsLength: 0,
          currentPage: 1,
@@ -394,9 +395,9 @@ class Post extends React.Component {
    scrollToMyRef = () => window.scrollTo(0, this.myRef.current.offsetTop);
 
    render() {
-      const disableButton = { leftButton: false, rightButton: false };
+      const disableButton = { leftButton: false, rightButton: false, submitButton: true };
       const { postID, post, comments, files, username } = this.state;
-      const { userNow, liked, likeNum } = this.state;
+      const { userNow, liked, likeNum, comment } = this.state;
       const {
          currentPage,
          pageLength,
@@ -444,7 +445,8 @@ class Post extends React.Component {
       disableButton.leftButton = currentPage === 1 ? true : false;
       disableButton.rightButton =
          (currentPage === pageLength) | (commentsLength === 0) ? true : false;
-
+      disableButton.submitButton = comment !== "" ? false : true
+      console.log("comment", comment);
       return (
          <Content>
             {this.state.alert && (
@@ -628,12 +630,12 @@ class Post extends React.Component {
                                  type="textarea"
                                  name="comment"
                                  id="comment"
-                                 value={this.state.comment}
+                                 value={comment}
                               />
                            </FormGroup>
                            <br />
                            <Row>
-                              <ButtonSubmit type="submit">Submit</ButtonSubmit>
+                              <ButtonSubmit disabled={disableButton.submitButton} type="submit">Submit</ButtonSubmit>
                            </Row>
                         </Form>
                      )}

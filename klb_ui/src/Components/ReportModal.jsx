@@ -1,9 +1,26 @@
 import React from "react";
 import API from "../module/api";
+import styled from "styled-components";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { Form, FormGroup, Label, Input, CustomInput } from "reactstrap";
+import { Form, FormGroup, Label, Input } from "reactstrap";
 
 import ConfirmModal from "./ConfirmModal";
+
+const ButtonYes = styled(Button)`
+   background-color: #fd7e47 !important;
+   border: none !important;
+   :hover {
+      background-color: #f5692c !important;
+   }
+`;
+
+const ButtonNo = styled(Button)`
+   background-color: #73777a !important;
+   border: none !important;
+   :hover {
+      background-color: #5d6163 !important;
+   }
+`;
 
 const config = {
    headers: {
@@ -15,8 +32,8 @@ class ReportModal extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
-			description: "",
-			modal: false
+         description: "",
+         modal: false
       };
    }
 
@@ -27,15 +44,14 @@ class ReportModal extends React.Component {
    };
 
    submitReport = () => {
-		console.log("submit");
+      console.log("submit");
       const description = this.state.description;
-		const postID = this.props.postID;
-		
+      const postID = this.props.postID;
 
       API.post(`/reports/${postID}`, { description }, config)
          .then(() => {
-				this.props.toggle();
-				this.props.toggleAlert()
+            this.props.toggle();
+            this.props.toggleAlert();
          })
          .catch(err => {
             console.error(err);
@@ -45,10 +61,8 @@ class ReportModal extends React.Component {
    render() {
       return (
          <div>
-				<ConfirmModal/>
-            <Modal
-               isOpen={this.props.isOpen}
-            >
+            <ConfirmModal />
+            <Modal isOpen={this.props.isOpen}>
                <ModalHeader>Report Post</ModalHeader>
                <ModalBody>
                   <Form>
@@ -66,22 +80,18 @@ class ReportModal extends React.Component {
                   </Form>
                </ModalBody>
                <ModalFooter style={{ borderTop: "none" }}>
-                  <Button
-                     style={{ backgroundColor: "#fd7e47", border: "none" }}
-                     onClick={() => { this.setState({ modal: true }) }}
+                  <ButtonYes
+                     onClick={() => {
+                        this.setState({ modal: true });
+                     }}
                   >
                      Done
-                  </Button>
-                  <Button
-                     style={{ backgroundColor: "#73777a", border: "none" }}
-                     onClick={this.props.toggle}
-                  >
-                     Cancel
-                  </Button>
+                  </ButtonYes>
+                  <ButtonNo onClick={this.props.toggle}>Cancel</ButtonNo>
                </ModalFooter>
             </Modal>
 
-				{this.state.modal && (
+            {this.state.modal && (
                <ConfirmModal
                   isOpen={this.state.modal}
                   nextFnc={this.submitReport}
