@@ -117,8 +117,9 @@ const config = {
 };
 
 const getPost = postID => {
-   return API.get(`/posts/${postID}`, config)
+   return API.get(`/posts/${postID}`, { params: { deleted: 0 } }, config)
       .then(res => {
+         console.log("res", res);
          const post = Array.isArray(res.data) ? res.data[0] : res.data;
 
          return { post };
@@ -220,7 +221,8 @@ class Post extends React.Component {
          dropdownOpen: false,
          modalReport: false,
          modalDisable: false,
-         alert: false
+         alert: false,
+         disabled: false
       };
       this.myRef = React.createRef();
    }
@@ -242,24 +244,28 @@ class Post extends React.Component {
          getCommentsLength(postID),
          getUserNow()
       ]).then(values => {
-         const props = {};
-         const username = values[0].post.createdBy.username;
-         const files = values[0].post.fileID;
+         if (values[0].post) {
+            const props = {};
+            const username = values[0].post.createdBy.username;
+            const files = values[0].post.fileID;
 
-         const pageLength = Math.ceil(
-            Object.values(values[4])[0] / commentsPerPage
-         );
+            const pageLength = Math.ceil(
+               Object.values(values[4])[0] / commentsPerPage
+            );
 
-         values[values.length] = { pageLength };
-         values[values.length] = { username };
-         values[values.length] = { files };
+            values[values.length] = { pageLength };
+            values[values.length] = { username };
+            values[values.length] = { files };
 
-         for (let i = 0; i < values.length; i++) {
-            const key = values[i] ? Object.keys(values[i])[0] : null;
-            const val = values[i] ? Object.values(values[i])[0] : null;
-            props[key] = val;
+            for (let i = 0; i < values.length; i++) {
+               const key = values[i] ? Object.keys(values[i])[0] : null;
+               const val = values[i] ? Object.values(values[i])[0] : null;
+               props[key] = val;
+            }
+            this.setState(props);
+         } else {
+            this.setState({ disabled: true });
          }
-         this.setState(props);
       });
       window.scrollTo(0, 0);
    }
@@ -279,23 +285,27 @@ class Post extends React.Component {
             getCommentsLength(postID),
             getUserNow()
          ]).then(values => {
-            const props = {};
-            const username = values[0].post.createdBy.username;
-            const files = values[0].post.fileID;
-            const pageLength = Math.ceil(
-               Object.values(values[4])[0] / commentsPerPage
-            );
+            if (values[0].post) {
+               const props = {};
+               const username = values[0].post.createdBy.username;
+               const files = values[0].post.fileID;
+               const pageLength = Math.ceil(
+                  Object.values(values[4])[0] / commentsPerPage
+               );
 
-            values[values.length] = { pageLength };
-            values[values.length] = { username };
-            values[values.length] = { files };
+               values[values.length] = { pageLength };
+               values[values.length] = { username };
+               values[values.length] = { files };
 
-            for (let i = 0; i < values.length; i++) {
-               const key = values[i] ? Object.keys(values[i])[0] : null;
-               const val = values[i] ? Object.values(values[i])[0] : null;
-               props[key] = val;
+               for (let i = 0; i < values.length; i++) {
+                  const key = values[i] ? Object.keys(values[i])[0] : null;
+                  const val = values[i] ? Object.values(values[i])[0] : null;
+                  props[key] = val;
+               }
+               this.setState(props);
+            } else {
+               this.setState({ disabled: true });
             }
-            this.setState(props);
          });
 
          if (prevState.currentPage !== this.state.currentPage) {
@@ -395,7 +405,11 @@ class Post extends React.Component {
    scrollToMyRef = () => window.scrollTo(0, this.myRef.current.offsetTop);
 
    render() {
-      const disableButton = { leftButton: false, rightButton: false, submitButton: true };
+      const disableButton = {
+         leftButton: false,
+         rightButton: false,
+         submitButton: true
+      };
       const { postID, post, comments, files, username } = this.state;
       const { userNow, liked, likeNum, comment } = this.state;
       const {
@@ -445,224 +459,257 @@ class Post extends React.Component {
       disableButton.leftButton = currentPage === 1 ? true : false;
       disableButton.rightButton =
          (currentPage === pageLength) | (commentsLength === 0) ? true : false;
-      disableButton.submitButton = comment !== "" ? false : true
-      console.log("comment", comment);
+      disableButton.submitButton = comment !== "" ? false : true;
+
       return (
          <Content>
             {this.state.alert && (
                <Alert color="warning">This post was reported!</Alert>
             )}
-            <Container fluid>
+            {!this.state.disabled && (
+               <Container fluid>
+                  <Row>
+                     <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
+                        <StyledPost>
+                           <Row>
+                              <Col>
+                                 <Title>{post.title}</Title>
+                              </Col>
+                              {config.headers.jwt && (
+                                 <Col xs={2}>
+                                    <Dropdown
+                                       className="float-right"
+                                       size="sm"
+                                       isOpen={this.state.dropdownOpen}
+                                       toggle={this.toggleDropdown}
+                                    >
+                                       <StyledDropdown>
+                                          <FaChevronDown />
+                                       </StyledDropdown>
+                                       <DropdownMenu right>
+                                          {username === userNow.username && (
+                                             <StyledDropdownItem
+                                                onClick={() => {
+                                                   this.props.history.push(
+                                                      `/post/${postID}/edit`
+                                                   );
+                                                }}
+                                             >
+                                                Edit
+                                             </StyledDropdownItem>
+                                          )}
+                                          <StyledDropdownItem
+                                             onClick={() =>
+                                                this.setState({
+                                                   modalReport: true
+                                                })
+                                             }
+                                          >
+                                             Report
+                                          </StyledDropdownItem>
+                                          {userNow.role === "admin" && (
+                                             <StyledDropdownItem
+                                                onClick={() =>
+                                                   this.setState({
+                                                      modalDisable: true
+                                                   })
+                                                }
+                                             >
+                                                Disable Post
+                                             </StyledDropdownItem>
+                                          )}
+                                       </DropdownMenu>
+                                    </Dropdown>
+                                 </Col>
+                              )}
+                           </Row>
+                           <Row>
+                              <Col>
+                                 <p
+                                    style={{ fontSize: "0.75em" }}
+                                    className="m-0"
+                                 >
+                                    {username}
+                                    <i>{` - ${moment(post.date).format(
+                                       "lll"
+                                    )}`}</i>
+                                    <StyledBadge>{post.category}</StyledBadge>
+                                 </p>
+                              </Col>
+                           </Row>
+                           <hr
+                              style={{ marginTop: "5px", marginBottom: "20px" }}
+                           />
+                           <Container>
+                              <Row>
+                                 <Col>
+                                    <StyledDetail>{post.detail}</StyledDetail>
+                                 </Col>
+                              </Row>
+                              {files && (
+                                 <Container
+                                    style={{
+                                       marginTop: "10px",
+                                       paddingLeft: 0
+                                    }}
+                                 >
+                                    {renderFile}
+                                 </Container>
+                              )}
+                           </Container>
+
+                           <hr
+                              style={{ marginTop: "20px", marginBottom: "5px" }}
+                           />
+
+                           <Row>
+                              <Col>
+                                 {liked ? (
+                                    <FaHeart
+                                       onClick={this.clickLike}
+                                       style={{
+                                          color: "#D62323",
+                                          cursor: "pointer"
+                                       }}
+                                    />
+                                 ) : (
+                                    <FiHeart
+                                       onClick={this.clickLike}
+                                       style={{
+                                          color: "#D62323",
+                                          cursor: "pointer"
+                                       }}
+                                    />
+                                 )}
+
+                                 <StyledP className="text-center">
+                                    <Span />
+                                    {likeNum > 1
+                                       ? `${likeNum} likes`
+                                       : `${likeNum} like`}
+                                 </StyledP>
+                              </Col>
+                              <Col>
+                                 <p
+                                    style={{ fontSize: "0.75em" }}
+                                    className="m-0 float-right"
+                                 >
+                                    <i>{`last updated - ${moment(
+                                       this.state.post.lastUpdated
+                                    ).format("lll")}`}</i>
+                                 </p>
+                              </Col>
+                           </Row>
+                        </StyledPost>
+
+                        <Row className="my-4">
+                           <Col>
+                              <hr />
+                           </Col>
+                           <Col
+                              xs={4}
+                              md={3}
+                              l={2}
+                              className="mx-auto text-center"
+                           >
+                              <StyleCommentsNum>
+                                 {this.state.commentsLength > 1
+                                    ? `${this.state.commentsLength} comments`
+                                    : `${this.state.commentsLength} comment`}
+                              </StyleCommentsNum>
+                           </Col>
+                           <Col>
+                              <hr />
+                           </Col>
+                        </Row>
+
+                        <div ref={this.myRef}>
+                           {comments.length > 0 && (
+                              <div
+                                 style={{ borderBottom: "1px solid #b8b8b8" }}
+                              >
+                                 {renderComment}
+                              </div>
+                           )}
+                        </div>
+
+                        <br />
+                        <PaginationComp
+                           changePage={this.changePage}
+                           currentPage={currentPage}
+                           pageNumbers={pageNumbers}
+                           disableButtom={disableButton}
+                           pageLength={pageLength}
+                        />
+
+                        {config.headers.jwt && (
+                           <Form onSubmit={this.commentHandler}>
+                              <FormGroup>
+                                 <Label
+                                    for="comment"
+                                    className="font-weight-bold"
+                                 >
+                                    New Comment
+                                 </Label>
+                                 <StyledTextarea
+                                    onChange={this.changeHandler}
+                                    type="textarea"
+                                    name="comment"
+                                    id="comment"
+                                    value={comment}
+                                 />
+                              </FormGroup>
+                              <br />
+                              <Row>
+                                 <ButtonSubmit
+                                    disabled={disableButton.submitButton}
+                                    type="submit"
+                                 >
+                                    Submit
+                                 </ButtonSubmit>
+                              </Row>
+                           </Form>
+                        )}
+                     </Col>
+                  </Row>
+
+                  {this.state.modalReport && (
+                     <ReportModal
+                        isOpen={true}
+                        nextFnc={this.submitReport}
+                        toggle={() => this.setState({ modalReport: false })}
+                        postID={postID}
+                        toggleAlert={() => this.setState({ alert: true })}
+                     />
+                  )}
+
+                  {this.state.modalDisable && (
+                     <ConfirmModal
+                        isOpen={true}
+                        nextFnc={() => this.disablePost(postID)}
+                        toggle={() => this.setState({ modalDisable: false })}
+                        header={`Disable Post`}
+                        body={`Are you sure you want to disable this post?`}
+                        yes={`Disable`}
+                     />
+                  )}
+               </Container>
+            )}
+            {this.state.disabled && (
+               <Container fluid>
                <Row>
                   <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
                      <StyledPost>
                         <Row>
                            <Col>
-                              <Title>{post.title}</Title>
-                           </Col>
-                           {config.headers.jwt && (
-                              <Col xs={2}>
-                                 <Dropdown
-                                    className="float-right"
-                                    size="sm"
-                                    isOpen={this.state.dropdownOpen}
-                                    toggle={this.toggleDropdown}
-                                 >
-                                    <StyledDropdown>
-                                       <FaChevronDown />
-                                    </StyledDropdown>
-                                    <DropdownMenu right>
-                                       {username === userNow.username && (
-                                          <StyledDropdownItem
-                                             onClick={() => {
-                                                this.props.history.push(
-                                                   `/post/${postID}/edit`
-                                                );
-                                             }}
-                                          >
-                                             Edit
-                                          </StyledDropdownItem>
-                                       )}
-                                       <StyledDropdownItem
-                                          onClick={() =>
-                                             this.setState({
-                                                modalReport: true
-                                             })
-                                          }
-                                       >
-                                          Report
-                                       </StyledDropdownItem>
-                                       {userNow.role === "admin" && (
-                                          <StyledDropdownItem
-                                             onClick={() =>
-                                                this.setState({
-                                                   modalDisable: true
-                                                })
-                                             }
-                                          >
-                                             Disable Post
-                                          </StyledDropdownItem>
-                                       )}
-                                    </DropdownMenu>
-                                 </Dropdown>
-                              </Col>
-                           )}
-                        </Row>
-                        <Row>
-                           <Col>
-                              <p style={{ fontSize: "0.75em" }} className="m-0">
-                                 {username}
-                                 <i>{` - ${moment(post.date).format(
-                                    "lll"
-                                 )}`}</i>
-                                 <StyledBadge>{post.category}</StyledBadge>
-                              </p>
-                           </Col>
-                        </Row>
-                        <hr
-                           style={{ marginTop: "5px", marginBottom: "20px" }}
-                        />
-                        <Container>
-                           <Row>
-                              <Col>
-                                 <StyledDetail>{post.detail}</StyledDetail>
-                              </Col>
-                           </Row>
-                           {files && (
-                              <Container
-                                 style={{ marginTop: "10px", paddingLeft: 0 }}
-                              >
-                                 {renderFile}
-                              </Container>
-                           )}
-                        </Container>
-
-                        <hr
-                           style={{ marginTop: "20px", marginBottom: "5px" }}
-                        />
-
-                        <Row>
-                           <Col>
-                              {liked ? (
-                                 <FaHeart
-                                    onClick={this.clickLike}
-                                    style={{
-                                       color: "#D62323",
-                                       cursor: "pointer"
-                                    }}
-                                 />
-                              ) : (
-                                 <FiHeart
-                                    onClick={this.clickLike}
-                                    style={{
-                                       color: "#D62323",
-                                       cursor: "pointer"
-                                    }}
-                                 />
-                              )}
-
-                              <StyledP className="text-center">
-                                 <Span />
-                                 {likeNum > 1
-                                    ? `${likeNum} likes`
-                                    : `${likeNum} like`}
-                              </StyledP>
-                           </Col>
-                           <Col>
-                              <p
-                                 style={{ fontSize: "0.75em" }}
-                                 className="m-0 float-right"
-                              >
-                                 <i>{`last updated - ${moment(
-                                    this.state.post.lastUpdated
-                                 ).format("lll")}`}</i>
-                              </p>
+                              <Title>Sorry, that page doesn’t exist!</Title>
                            </Col>
                         </Row>
                      </StyledPost>
-
-                     <Row className="my-4">
-                        <Col>
-                           <hr />
-                        </Col>
-                        <Col
-                           xs={4}
-                           md={3}
-                           l={2}
-                           className="mx-auto text-center"
-                        >
-                           <StyleCommentsNum>
-                              {this.state.commentsLength > 1
-                                 ? `${this.state.commentsLength} comments`
-                                 : `${this.state.commentsLength} comment`}
-                           </StyleCommentsNum>
-                        </Col>
-                        <Col>
-                           <hr />
-                        </Col>
-                     </Row>
-
-                     <div ref={this.myRef}>
-                        {comments.length > 0 && (
-                           <div style={{ borderBottom: "1px solid #b8b8b8" }}>
-                              {renderComment}
-                           </div>
-                        )}
-                     </div>
-
-                     <br />
-                     <PaginationComp
-                        changePage={this.changePage}
-                        currentPage={currentPage}
-                        pageNumbers={pageNumbers}
-                        disableButtom={disableButton}
-                        pageLength={pageLength}
-                     />
-
-                     {config.headers.jwt && (
-                        <Form onSubmit={this.commentHandler}>
-                           <FormGroup>
-                              <Label for="comment" className="font-weight-bold">
-                                 New Comment
-                              </Label>
-                              <StyledTextarea
-                                 onChange={this.changeHandler}
-                                 type="textarea"
-                                 name="comment"
-                                 id="comment"
-                                 value={comment}
-                              />
-                           </FormGroup>
-                           <br />
-                           <Row>
-                              <ButtonSubmit disabled={disableButton.submitButton} type="submit">Submit</ButtonSubmit>
-                           </Row>
-                        </Form>
-                     )}
                   </Col>
                </Row>
-
-               {this.state.modalReport && (
-                  <ReportModal
-                     isOpen={true}
-                     nextFnc={this.submitReport}
-                     toggle={() => this.setState({ modalReport: false })}
-                     postID={postID}
-                     toggleAlert={() => this.setState({ alert: true })}
-                  />
-               )}
-
-               {this.state.modalDisable && (
-                  <ConfirmModal
-                     isOpen={true}
-                     nextFnc={() => this.disablePost(postID)}
-                     toggle={() => this.setState({ modalDisable: false })}
-                     header={`Disable Post`}
-                     body={`Are you sure you want to disable this post?`}
-                     yes={`Disable`}
-                  />
-               )}
             </Container>
+            )}
          </Content>
       );
    }
