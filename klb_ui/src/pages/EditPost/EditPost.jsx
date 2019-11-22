@@ -64,7 +64,7 @@ const getPost = postID => {
 const getFiles = postID => {
    return API.get(`/posts/${postID}/files`, config)
       .then(res => {
-         const files = res.data
+         const files = res.data;
          return { files };
       })
       .catch(err => {
@@ -85,6 +85,19 @@ const getCategory = () => {
       });
 };
 
+const getUserNow = () => {
+   return API.get(`/users/signedIn`, config)
+      .then(res => {
+         const userNow = {};
+         userNow._id = res.data[0]._id;
+
+         return { userNow };
+      })
+      .catch(err => {
+         console.error(err);
+      });
+};
+
 class NewPost extends React.Component {
    constructor(props) {
       super(props);
@@ -97,7 +110,9 @@ class NewPost extends React.Component {
          categories: [],
          files: [],
          modal: false,
-         filesLength: 0
+         filesLength: 0,
+         createdBy: "",
+         userNow: ""
       };
       this.myRef = React.createRef();
    }
@@ -105,34 +120,37 @@ class NewPost extends React.Component {
    componentDidMount() {
       const postID = this.props.match.params.id;
 
-      Promise.all([getPost(postID), getCategory()]).then(values => {
-         const props = {};
-         const filesLength =  Object.values(values[0])[0].fileID.length;
+      Promise.all([getPost(postID), getCategory(), getUserNow()]).then(
+         values => {
+            const props = {};
+            const filesLength = Object.values(values[0])[0].fileID.length;
 
-         values[values.length] = { filesLength };
+            values[values.length] = { filesLength };
 
-         for (let i = 0; i < values.length; i++) {
-            const key = values[i] ? Object.keys(values[i])[0] : null;
-            const val = values[i] ? Object.values(values[i])[0] : null;
-            props[key] = val;
+            for (let i = 0; i < values.length; i++) {
+               const key = values[i] ? Object.keys(values[i])[0] : null;
+               const val = values[i] ? Object.values(values[i])[0] : null;
+               props[key] = val;
+            }
+            console.log("props", props);
+
+            this.setState({
+               categories: props.categories,
+               title: props.post.title,
+               category: props.post.category,
+               detail: props.post.detail,
+               createdBy: props.post.createdBy._id,
+               files: props.post.fileID,
+               filesLength: props.filesLength,
+               userNow: props.userNow
+            });
          }
-         
-         this.setState({
-            categories: props.categories,
-            title: props.post.title,
-            category: props.post.category,
-            detail: props.post.detail,
-            files: props.post.fileID,
-            filesLength: props.filesLength
-         });
-      });
-      this.scrollToMyRef()
+      );
+      this.scrollToMyRef();
    }
 
    componentDidUpdate(prevProps, prevState) {
-      if (
-         prevState.filesLength !== this.state.filesLength
-      ) {
+      if (prevState.filesLength !== this.state.filesLength) {
          const postID = this.props.match.params.id;
 
          Promise.all([getFiles(postID)]).then(values => {
@@ -144,26 +162,26 @@ class NewPost extends React.Component {
                props[key] = val;
             }
 
-            if(!Array.isArray(props.files)){
-               props.files = [props.files]
+            if (!Array.isArray(props.files)) {
+               props.files = [props.files];
             }
 
             this.setState({
                files: props.files
             });
          });
-         this.scrollToMyRef()
+         this.scrollToMyRef();
       }
    }
 
    mySubmitHandler = () => {
       const postID = this.props.match.params.id;
-      const { title, category, detail } = this.state
+      const { title, category, detail } = this.state;
       const data = {
          title: title,
          category: category,
          detail: detail
-      }
+      };
 
       API.patch(`/posts/${postID}`, data, config)
          .then(() => {
@@ -177,28 +195,40 @@ class NewPost extends React.Component {
    submitFile = event => {
       event.preventDefault();
       const postID = this.props.match.params.id;
-		const files = $('#file').prop('files');
+      const files = $("#file").prop("files");
 
-      const uploadFilesNum = files.length
-      const { filesLength } = this.state
+      const uploadFilesNum = files.length;
+      const { filesLength } = this.state;
 
       addFile(postID, files)
-      .then(() => {
-         this.setState({ filesLength: filesLength + uploadFilesNum, file: null })
-      })
-      .catch(err => {
-         console.error(err);
-      })
+         .then(() => {
+            this.setState({
+               filesLength: filesLength + uploadFilesNum,
+               file: null
+            });
+         })
+         .catch(err => {
+            console.error(err);
+         });
    };
 
    myChangeHandler = event => {
       let name = event.target.name;
       let val = event.target.value;
-      this.setState({ [name]: val });
+      const fileFromInput = $("#file").prop("files");
+
+      if (typeof fileFromInput !== "undefined" && fileFromInput.length !== 0) {
+         this.setState({
+            [name]: val,
+            fileLable: `${fileFromInput.length} file`
+         });
+      } else {
+         this.setState({ [name]: val, fileLable: `Choose File` });
+      }
    };
 
    delFile = fileID => {
-      const { filesLength } = this.state
+      const { filesLength } = this.state;
       const postID = this.props.match.params.id;
 
       API.delete(`/posts/${postID}/file/${fileID}`, config)
@@ -206,7 +236,7 @@ class NewPost extends React.Component {
             this.setState({ filesLength: filesLength - 1, modal: false });
          })
          .catch(err => {
-            console.log(err);
+            console.error(err);
          });
    };
 
@@ -217,8 +247,16 @@ class NewPost extends React.Component {
    scrollToMyRef = () => window.scrollTo(0, this.myRef.current.offsetTop);
 
    render() {
-      const { categories, files } = this.state;
-
+      const {
+         categories,
+         files,
+         userNow,
+         title,
+         category,
+         detail,
+         createdBy
+      } = this.state;
+      console.log(this.state);
       const renderCategory = categories.map((category, index) => {
          return (
             <option key={index} value={category.name}>
@@ -253,99 +291,144 @@ class NewPost extends React.Component {
 
       return (
          <Content ref={this.myRef}>
-            <Row>
-               <Col xs={7} className="mx-auto my-0">
-                  <Card>
-                     <CardBody
-                        style={{ paddingLeft: "50px", paddingRight: "50px" }}
-                     >
-                        <Headline>Edit Post</Headline>
-                        <hr
-                           style={{ marginBottom: "30px", marginTop: "0px" }}
-                        />
-
-                        <Form>
-                           <FormGroup>
-                              <Label for="title">Title</Label>
-                              <Input
-                                 onChange={this.myChangeHandler}
-                                 type="text"
-                                 name="title"
-                                 id="title"
-                                 bsSize="sm"
-                                 value={this.state.title}
-                                 // className="w-50"
-                                 style={{ borderRadius: "7px" }}
-                              />
-                           </FormGroup>
-
-                           <FormGroup>
-                              <Label for="category">Category</Label>
-                              <Input
-                                 onChange={this.myChangeHandler}
-                                 type="select"
-                                 name="category"
-                                 id="category"
-                                 bsSize="sm"
-                                 className="w-50"
-                                 style={{
-                                    borderRadius: "7px",
-                                    color: "#73777A"
-                                 }}
-                                 value={this.state.category}
-                              >
-                                 {renderCategory}
-                              </Input>
-                           </FormGroup>
-
-                           <FormGroup>
-                              <Label for="detail">Detail</Label>
-                              <Input
-                                 onChange={this.myChangeHandler}
-                                 type="textarea"
-                                 name="detail"
-                                 id="detail"
-                                 bsSize="sm"
-                                 style={{ borderRadius: "7px" }}
-                                 value={this.state.detail}
-                              />
-                           </FormGroup>
-                        </Form>
-
-                        <Form>
-                           <FormGroup style={{ display: "inline-block", paddingRight: "20px" }}>
-                              <Label for="file">Attachment</Label>
-                              <br />
-                              <CustomInput
-                                 onChange={this.myChangeHandler}
-                                 label={this.state.file}
-                                 id="file"
-                                 name="file"
-                                 type="file"
-                                 multiple="multiple"
-                                 // className="w-50"
-                                 bsSize="sm"
-                              />
-                           </FormGroup>
-                           <StyledButton onClick={this.submitFile} style={{ display: "inline-block" }}>Upload</StyledButton>
-                        </Form>
-
-                        {files && (
-                           <Container
-                              style={{ marginTop: "10px", paddingLeft: 0 }}
+            {userNow._id === createdBy && (
+               <Container fluid>
+                  <Row>
+                     <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
+                        <Card>
+                           <CardBody
+                              style={{
+                                 paddingLeft: "50px",
+                                 paddingRight: "50px"
+                              }}
                            >
-                              {renderFile}
-                           </Container>
-                        )}
-                           
-                        <Row style={{ paddingTop: "50px"}}>
-                           <StyledButton onClick={this.mySubmitHandler}>Done</StyledButton>
-                        </Row>
-                     </CardBody>
-                  </Card>
-               </Col>
-            </Row>
-            
+                              <Headline>Edit Post</Headline>
+                              <hr
+                                 style={{
+                                    marginBottom: "30px",
+                                    marginTop: "0px"
+                                 }}
+                              />
+
+                              <Form>
+                                 <FormGroup>
+                                    <Label for="title">Title</Label>
+                                    <Input
+                                       onChange={this.myChangeHandler}
+                                       type="text"
+                                       name="title"
+                                       id="title"
+                                       bsSize="sm"
+                                       value={title}
+                                       // className="w-50"
+                                       style={{ borderRadius: "7px" }}
+                                    />
+                                 </FormGroup>
+
+                                 <FormGroup>
+                                    <Label for="category">Category</Label>
+                                    <Input
+                                       onChange={this.myChangeHandler}
+                                       type="select"
+                                       name="category"
+                                       id="category"
+                                       bsSize="sm"
+                                       className="w-50"
+                                       style={{
+                                          borderRadius: "7px",
+                                          color: "#73777A"
+                                       }}
+                                       value={category}
+                                    >
+                                       {renderCategory}
+                                    </Input>
+                                 </FormGroup>
+
+                                 <FormGroup>
+                                    <Label for="detail">Detail</Label>
+                                    <Input
+                                       onChange={this.myChangeHandler}
+                                       type="textarea"
+                                       name="detail"
+                                       id="detail"
+                                       bsSize="sm"
+                                       style={{ borderRadius: "7px" }}
+                                       value={detail}
+                                    />
+                                 </FormGroup>
+                              </Form>
+
+                              <Form>
+                                 <FormGroup
+                                    style={{
+                                       display: "inline-block",
+                                       paddingRight: "20px"
+                                    }}
+                                 >
+                                    <Label for="file">Attachment</Label>
+                                    <br />
+                                    <CustomInput
+                                       onChange={this.myChangeHandler}
+                                       label={this.state.file}
+                                       id="file"
+                                       name="file"
+                                       type="file"
+                                       multiple="multiple"
+                                       // className="w-50"
+                                       bsSize="sm"
+                                    />
+                                 </FormGroup>
+                                 <StyledButton
+                                    onClick={this.submitFile}
+                                    style={{ display: "inline-block" }}
+                                 >
+                                    Upload
+                                 </StyledButton>
+                              </Form>
+
+                              {files && (
+                                 <Container
+                                    style={{
+                                       marginTop: "10px",
+                                       paddingLeft: 0
+                                    }}
+                                 >
+                                    {renderFile}
+                                 </Container>
+                              )}
+
+                              <Row style={{ paddingTop: "50px" }}>
+                                 <StyledButton onClick={this.mySubmitHandler}>
+                                    Done
+                                 </StyledButton>
+                              </Row>
+                           </CardBody>
+                        </Card>
+                     </Col>
+                  </Row>
+               </Container>
+            )}
+            {userNow._id !== createdBy && (
+               <Container fluid>
+                  <Row>
+                     <Col  xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
+                        <Card>
+                           <CardBody
+                              style={{
+                                 paddingLeft: "50px",
+                                 paddingRight: "50px"
+                              }}
+                           >
+                              <Headline style={{ fontSize: "1rem" }}>
+                                 Only writer can edit post!
+                              </Headline>
+                           </CardBody>
+                        </Card>
+                     </Col>
+                  </Row>
+               </Container>
+            )}
+
             {this.state.modal && (
                <ConfirmModal
                   isOpen={this.state.modal}

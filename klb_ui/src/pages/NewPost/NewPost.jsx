@@ -72,8 +72,7 @@ class NewPost extends React.Component {
             data[key] = value;
          }
 
-         API.post("/posts", data, config)
-         .then(doc => {
+         API.post("/posts", data, config).then(doc => {
             const postID = doc.data._id;
             addFile(postID, files)
                .then(() => {
@@ -91,11 +90,18 @@ class NewPost extends React.Component {
    changeHandler = event => {
       let name = event.target.name;
       let val = event.target.value;
-      this.setState({ [name]: val });
+      const fileFromInput = $("#file").prop("files")
+
+      if (typeof(fileFromInput) !== 'undefined' && fileFromInput.length !== 0){
+         this.setState({ [name]: val, fileLable: `${fileFromInput.length} file` });
+      }
+      else {
+         this.setState({ [name]: val, fileLable: `Choose File` })
+      }
    };
 
    render() {
-      const { categories, title, detail, fileNum } = this.state;
+      const { categories, title, detail, fileNum, fileLable } = this.state;
       const disableButton = { submit: true };
 
       const renderCategory = categories.map((category, index) => {
@@ -194,7 +200,7 @@ class NewPost extends React.Component {
 
                               <CustomInput
                                  onChange={this.changeHandler}
-                                 label={this.state.file}
+                                 label={fileLable}
                                  id="file"
                                  name="file"
                                  type="file"

@@ -63,6 +63,19 @@ const getReportedNum = () => {
       });
 };
 
+const getUserNow = () => {
+   return API.get(`/users/signedIn`, config)
+      .then(res => {
+         const userNow = {};
+         userNow.role = res.data[0].role;
+
+         return { userNow };
+      })
+      .catch(err => {
+         console.error(err);
+      });
+};
+
 class ReportedPost extends React.Component {
    constructor(props) {
       super(props);
@@ -72,7 +85,8 @@ class ReportedPost extends React.Component {
          currentPage: 1,
          reportPerPage: 10,
          pageLength: 1,
-         pageRangeDisplayed: 10
+         pageRangeDisplayed: 10,
+         userNow: ""
       };
    }
 
@@ -85,7 +99,11 @@ class ReportedPost extends React.Component {
       const props = {};
       const query = { limit, skip };
 
-      Promise.all([getReportedPost(query), getReportedNum()]).then(values => {
+      Promise.all([
+         getReportedPost(query),
+         getReportedNum(),
+         getUserNow()
+      ]).then(values => {
          const pageLength = Math.ceil(
             Object.values(values[1])[0] / reportPerPage
          );
@@ -141,7 +159,13 @@ class ReportedPost extends React.Component {
 
    render() {
       const disableButtom = { leftButton: false, rightButton: false };
-      const { posts, currentPage, pageLength, pageRangeDisplayed } = this.state;
+      const {
+         posts,
+         currentPage,
+         pageLength,
+         pageRangeDisplayed,
+         userNow
+      } = this.state;
 
       const renderReport = posts.map((post, index) => {
          return (
@@ -179,39 +203,64 @@ class ReportedPost extends React.Component {
 
       return (
          <Content>
-            <Container fluid>
-               <Row>
-                  <Col xs={7} className="mx-auto my-0">
-                     <Card style={{ marginBottom: "30px" }}>
-                        <CardBody
-                           style={{ paddingLeft: "50px", paddingRight: "50px" }}
-                        >
-                           <Headline>Report</Headline>
+            {userNow.role === "admin" && (
+               <Container fluid>
+                  <Row>
+                     <Col xs={7} className="mx-auto my-0">
+                        <Card style={{ marginBottom: "30px" }}>
+                           <CardBody
+                              style={{
+                                 paddingLeft: "50px",
+                                 paddingRight: "50px"
+                              }}
+                           >
+                              <Headline>Report</Headline>
 
-                           <div style={{ paddingTop: "10px" }}>
-                              <Table size="sm" striped>
-                                 <thead>
-                                    <StyledTr>
-                                       <th>Post</th>
-                                       <th>Reported by</th>
-                                       <th>Description</th>
-                                    </StyledTr>
-                                 </thead>
-                                 <tbody>{renderReport}</tbody>
-                              </Table>
-                           </div>
-                        </CardBody>
-                     </Card>
-                     <PaginationComp
-                        changePage={this.changePage}
-                        currentPage={currentPage}
-                        pageNumbers={pageNumbers}
-                        disableButtom={disableButtom}
-                        pageLength={pageLength}
-                     />
-                  </Col>
-               </Row>
-            </Container>
+                              <div style={{ paddingTop: "10px" }}>
+                                 <Table size="sm" striped>
+                                    <thead>
+                                       <StyledTr>
+                                          <th>Post</th>
+                                          <th>Reported by</th>
+                                          <th>Description</th>
+                                       </StyledTr>
+                                    </thead>
+                                    <tbody>{renderReport}</tbody>
+                                 </Table>
+                              </div>
+                           </CardBody>
+                        </Card>
+                        <PaginationComp
+                           changePage={this.changePage}
+                           currentPage={currentPage}
+                           pageNumbers={pageNumbers}
+                           disableButtom={disableButtom}
+                           pageLength={pageLength}
+                        />
+                     </Col>
+                  </Row>
+               </Container>
+            )}
+            {userNow.role !== "admin" && (
+               <Container fluid>
+                  <Row>
+                     <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
+                        <Card>
+                           <CardBody
+                              style={{
+                                 paddingLeft: "50px",
+                                 paddingRight: "50px"
+                              }}
+                           >
+                              <Headline style={{ fontSize: "1rem" }}>
+                                 Only admin can access this page!
+                              </Headline>
+                           </CardBody>
+                        </Card>
+                     </Col>
+                  </Row>
+               </Container>
+            )}
          </Content>
       );
    }

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import API from "../../module/api";
-import { Row, Col } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 import { Card, CardBody } from "reactstrap";
 import { Form, FormGroup, Label, Input, Button } from "reactstrap";
 
@@ -99,136 +99,142 @@ class Search extends React.Component {
 
       return (
          <Content>
-            <Row>
-               <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
-                  <Card>
-                     <CardBody
-                        style={{ paddingLeft: "50px", paddingRight: "50px" }}
-                     >
-                        <Headline>Search</Headline>
-                        <hr
-                           style={{ marginBottom: "30px", marginTop: "0px" }}
-                        />
+            <Container fluid>
+               <Row>
+                  <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
+                     <Card>
+                        <CardBody
+                           style={{ paddingLeft: "50px", paddingRight: "50px" }}
+                        >
+                           <Headline>Search</Headline>
+                           <hr
+                              style={{ marginBottom: "30px", marginTop: "0px" }}
+                           />
 
-                        <Form onSubmit={this.mySubmitHandler}>
-                           <FormGroup row>
-                              <StyledLable for="title" lg={2} className="pr-0">
-                                 Title:
-                              </StyledLable>
-                              <Col xs={12} lg={10}>
-                                 <Input
-                                    onChange={this.myChangeHandler}
-                                    type="text"
-                                    name="title"
-                                    id="title"
-                                    bsSize="sm"
-                                    style={{ borderRadius: "7px" }}
-                                 />
-                              </Col>
-                           </FormGroup>
-
-                           <FormGroup row>
-                              <StyledLable
-                                 for="category"
-                                 lg={2}
-                                 className="pr-0"
-                              >
-                                 Category:
-                              </StyledLable>
-                              <Col xs={12} lg={6}>
-                                 <Input
-                                    onChange={this.myChangeHandler}
-                                    type="select"
-                                    name="category"
-                                    id="category"
-                                    bsSize="sm"
-                                    // className="w-50"
-                                    style={{
-                                       borderRadius: "7px",
-                                       color: "#73777A"
-                                    }}
+                           <Form onSubmit={this.mySubmitHandler}>
+                              <FormGroup row>
+                                 <StyledLable
+                                    for="title"
+                                    lg={2}
+                                    className="pr-0"
                                  >
-                                    <option />
-                                    {renderCategory}
-                                 </Input>
-                              </Col>
-                           </FormGroup>
+                                    Title:
+                                 </StyledLable>
+                                 <Col xs={12} lg={10}>
+                                    <Input
+                                       onChange={this.myChangeHandler}
+                                       type="text"
+                                       name="title"
+                                       id="title"
+                                       bsSize="sm"
+                                       style={{ borderRadius: "7px" }}
+                                    />
+                                 </Col>
+                              </FormGroup>
 
-                           <FormGroup row>
-                              <StyledLable
-                                 for="fromUser"
-                                 lg={2}
-                                 className="pr-0"
-                              >
-                                 From user:
-                              </StyledLable>
-                              <Col xs={12} lg={6}>
-                                 <Input
-                                    onChange={this.myChangeHandler}
-                                    type="text"
-                                    name="fromUser"
-                                    id="fromUser"
-                                    bsSize="sm"
-                                    // className="w-50"
-                                    style={{ borderRadius: "7px" }}
-                                 />
-                              </Col>
-                           </FormGroup>
+                              <FormGroup row>
+                                 <StyledLable
+                                    for="category"
+                                    lg={2}
+                                    className="pr-0"
+                                 >
+                                    Category:
+                                 </StyledLable>
+                                 <Col xs={12} lg={6}>
+                                    <Input
+                                       onChange={this.myChangeHandler}
+                                       type="select"
+                                       name="category"
+                                       id="category"
+                                       bsSize="sm"
+                                       // className="w-50"
+                                       style={{
+                                          borderRadius: "7px",
+                                          color: "#73777A"
+                                       }}
+                                    >
+                                       <option />
+                                       {renderCategory}
+                                    </Input>
+                                 </Col>
+                              </FormGroup>
 
-                           <FormGroup row>
-                              <StyledLable
-                                 for="fromDate"
-                                 lg={2}
-                                 xs={12}
-                                 className="pr-0"
-                              >
-                                 From this date:
-                              </StyledLable>
-                              <Col xs={7} lg={4}>
-                                 <Input
-                                    onChange={this.myChangeHandler}
-                                    type="date"
-                                    name="fromDate"
-                                    id="fromDate"
-                                    bsSize="sm"
-                                    style={{ borderRadius: "7px" }}
-                                 />
-                              </Col>
+                              <FormGroup row>
+                                 <StyledLable
+                                    for="fromUser"
+                                    lg={2}
+                                    className="pr-0"
+                                 >
+                                    From user:
+                                 </StyledLable>
+                                 <Col xs={12} lg={6}>
+                                    <Input
+                                       onChange={this.myChangeHandler}
+                                       type="text"
+                                       name="fromUser"
+                                       id="fromUser"
+                                       bsSize="sm"
+                                       // className="w-50"
+                                       style={{ borderRadius: "7px" }}
+                                    />
+                                 </Col>
+                              </FormGroup>
 
-                              <StyledLable
-                                 for="toDate"
-                                 lg={2}
-                                 xs={12}
-                                 // className="text-right"
-                              >
-                                 To this date:
-                              </StyledLable>
-                              <Col xs={7} lg={4}>
-                                 <Input
-                                    onChange={this.myChangeHandler}
-                                    type="date"
-                                    name="toDate"
-                                    id="toDate"
-                                    bsSize="sm"
-                                    style={{ borderRadius: "7px" }}
-                                 />
-                              </Col>
-                           </FormGroup>
+                              <FormGroup row>
+                                 <StyledLable
+                                    for="fromDate"
+                                    lg={2}
+                                    xs={12}
+                                    className="pr-0"
+                                 >
+                                    From this date:
+                                 </StyledLable>
+                                 <Col xs={7} lg={4}>
+                                    <Input
+                                       onChange={this.myChangeHandler}
+                                       type="date"
+                                       name="fromDate"
+                                       id="fromDate"
+                                       bsSize="sm"
+                                       style={{ borderRadius: "7px" }}
+                                    />
+                                 </Col>
 
-                           <br />
-                           <Row>
-                              <StyledButton
-                                 type="button"
-                                 onClick={this.goToResult}
-                              >
-                                 Search
-                              </StyledButton>
-                           </Row>
-                        </Form>
-                     </CardBody>
-                  </Card>
-               </Col>
-            </Row>
+                                 <StyledLable
+                                    for="toDate"
+                                    lg={2}
+                                    xs={12}
+                                    // className="text-right"
+                                 >
+                                    To this date:
+                                 </StyledLable>
+                                 <Col xs={7} lg={4}>
+                                    <Input
+                                       onChange={this.myChangeHandler}
+                                       type="date"
+                                       name="toDate"
+                                       id="toDate"
+                                       bsSize="sm"
+                                       style={{ borderRadius: "7px" }}
+                                    />
+                                 </Col>
+                              </FormGroup>
+
+                              <br />
+                              <Row>
+                                 <StyledButton
+                                    type="button"
+                                    onClick={this.goToResult}
+                                 >
+                                    Search
+                                 </StyledButton>
+                              </Row>
+                           </Form>
+                        </CardBody>
+                     </Card>
+                  </Col>
+               </Row>
+            </Container>
          </Content>
       );
    }

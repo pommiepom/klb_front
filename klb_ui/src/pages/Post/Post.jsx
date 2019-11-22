@@ -697,18 +697,18 @@ class Post extends React.Component {
             )}
             {this.state.disabled && (
                <Container fluid>
-               <Row>
-                  <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
-                     <StyledPost>
-                        <Row>
-                           <Col>
-                              <Title>Sorry, that page doesn’t exist!</Title>
-                           </Col>
-                        </Row>
-                     </StyledPost>
-                  </Col>
-               </Row>
-            </Container>
+                  <Row>
+                     <Col xs={10} sm={8} md={7} l={6} className="mx-auto my-0">
+                        <StyledPost>
+                           <Row>
+                              <Col>
+                                 <Title>Sorry, that page doesn’t exist!</Title>
+                              </Col>
+                           </Row>
+                        </StyledPost>
+                     </Col>
+                  </Row>
+               </Container>
             )}
          </Content>
       );
