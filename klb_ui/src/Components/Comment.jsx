@@ -34,7 +34,7 @@ const config = {
 };
 
 const getNumberOfLike = commentID => {
-   return API.get(`/likes/comment/${commentID}/count`)
+   return API.get(`/comments/${commentID}/likes/count`)
       .then(res => {
          const likeNum = res.data;
 
@@ -50,7 +50,7 @@ const checkUserLike = commentID => {
    if (config.headers.jwt) {
       return API.get(`/comments/${commentID}/checkuser`, config)
          .then(res => {
-            const liked = res.data.length !== 0 ? true : false;
+            const liked = res.data;
 
             return { liked };
          })

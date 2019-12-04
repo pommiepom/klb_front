@@ -119,7 +119,6 @@ const config = {
 const getPost = postID => {
    return API.get(`/posts/${postID}`, { params: { deleted: 0 } }, config)
       .then(res => {
-         console.log("res", res);
          const post = Array.isArray(res.data) ? res.data[0] : res.data;
 
          return { post };
@@ -147,7 +146,7 @@ const checkUserLike = postID => {
    if (config.headers.jwt) {
       return API.get(`/posts/${postID}/checkuser`, config)
          .then(res => {
-            const liked = res.data.length !== 0 ? true : false;
+            const liked = res.data;;
 
             return { liked };
          })
@@ -380,9 +379,6 @@ class Post extends React.Component {
    };
 
    disablePost = postID => {
-      console.log("disble");
-      console.log("postID", postID);
-
       API.delete(`/posts/${postID}`, config)
          .then(() => {
             this.props.history.push(`/`);

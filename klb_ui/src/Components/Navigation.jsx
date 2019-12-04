@@ -122,45 +122,14 @@ class Navigation extends React.Component {
       });
    }
 
-   // componentDidUpdate(prevProps, prevState) {
-   //    console.log("prevState.userNow", prevState.userNow);
-   //    console.log("this.state.userNow", this.state.userNow);
-   //    if (prevState.userNow !== this.state.userNow) {
-   //       Promise.all([getCategory(), getUserNow()]).then(values => {
-   //          const props = {};
-
-   //          for (let i = 0; i < values.length; i++) {
-   //             const key = values[i] ? Object.keys(values[i])[0] : null;
-   //             const val = values[i] ? Object.values(values[i])[0] : null;
-   //             props[key] = val;
-   //          }
-   //          this.setState(props);
-   //       });
-   //    }
-   // }
-
    signOut = () => {
       var delJwt = new Promise((resolve, reject) => {
          resolve(localStorage.clear());
       });
 
-      delJwt
-         .then(() => {
-            console.log("del");
-            config.headers.jwt = localStorage.getItem("jwt");
-         })
-         .then(
-            getCategory().then(values => {
-               const props = {};
-               for (let i = 0; i < values.length; i++) {
-                  const key = values[i] ? Object.keys(values[i])[0] : null;
-                  const val = values[i] ? Object.values(values[i])[0] : null;
-                  props[key] = val;
-               }
-               console.log("props", props);
-               this.setState(props);
-            })
-         );
+      delJwt.then(() => {
+         window.location.reload();
+      });
    };
 
    render() {

@@ -174,7 +174,7 @@ class NewPost extends React.Component {
       }
    }
 
-   mySubmitHandler = () => {
+   submitHandler = () => {
       const postID = this.props.match.params.id;
       const { title, category, detail } = this.state;
       const data = {
@@ -212,7 +212,7 @@ class NewPost extends React.Component {
          });
    };
 
-   myChangeHandler = event => {
+   changeHandler = event => {
       let name = event.target.name;
       let val = event.target.value;
       const fileFromInput = $("#file").prop("files");
@@ -254,7 +254,8 @@ class NewPost extends React.Component {
          title,
          category,
          detail,
-         createdBy
+         createdBy,
+         fileLable
       } = this.state;
       console.log(this.state);
       const renderCategory = categories.map((category, index) => {
@@ -314,7 +315,7 @@ class NewPost extends React.Component {
                                  <FormGroup>
                                     <Label for="title">Title</Label>
                                     <Input
-                                       onChange={this.myChangeHandler}
+                                       onChange={this.changeHandler}
                                        type="text"
                                        name="title"
                                        id="title"
@@ -328,7 +329,7 @@ class NewPost extends React.Component {
                                  <FormGroup>
                                     <Label for="category">Category</Label>
                                     <Input
-                                       onChange={this.myChangeHandler}
+                                       onChange={this.changeHandler}
                                        type="select"
                                        name="category"
                                        id="category"
@@ -347,7 +348,7 @@ class NewPost extends React.Component {
                                  <FormGroup>
                                     <Label for="detail">Detail</Label>
                                     <Input
-                                       onChange={this.myChangeHandler}
+                                       onChange={this.changeHandler}
                                        type="textarea"
                                        name="detail"
                                        id="detail"
@@ -368,8 +369,8 @@ class NewPost extends React.Component {
                                     <Label for="file">Attachment</Label>
                                     <br />
                                     <CustomInput
-                                       onChange={this.myChangeHandler}
-                                       label={this.state.file}
+                                       onChange={this.changeHandler}
+                                       label={fileLable}
                                        id="file"
                                        name="file"
                                        type="file"
@@ -398,7 +399,7 @@ class NewPost extends React.Component {
                               )}
 
                               <Row style={{ paddingTop: "50px" }}>
-                                 <StyledButton onClick={this.mySubmitHandler}>
+                                 <StyledButton onClick={this.submitHandler}>
                                     Done
                                  </StyledButton>
                               </Row>
